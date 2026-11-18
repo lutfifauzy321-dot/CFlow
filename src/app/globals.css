@@ -1,0 +1,158 @@
+@import "tailwindcss";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+:root {
+  color-scheme: light;
+  --page: #f7f6fd;
+  --surface: #ffffff;
+  --surface-alt: #f1effa;
+  --foreground: #140d33;
+  --foreground-soft: #2f2554;
+  --muted: #6b6388;
+  --muted-soft: #9c95b6;
+  --border: #ece8f6;
+  --border-soft: #f4f1fb;
+  --primary: #552cb8;
+  --primary-strong: #4721a3;
+  --primary-hover: #4c25ab;
+  --on-primary: #ffffff;
+  --primary-soft: #f4f0ff;
+  --primary-soft-hover: #ede9fe;
+  --sidebar: #4e26a7;
+  --sidebar-end: #2b0f69;
+  --sidebar-text: #ffffff;
+  --sidebar-muted: #c4b5fd;
+  --sidebar-active: rgba(255, 255, 255, 0.22);
+  --sidebar-active-text: #ffffff;
+  --hero-wave-1: #f3effe;
+  --hero-wave-2: #e8dffc;
+  --hero-wave-3: #ded2fa;
+  --hero-wave-soft: #faf8ff;
+  --income: #10b981;
+  --income-soft: #ecfdf5;
+  --income-text: #047857;
+  --expense: #f43f5e;
+  --expense-soft: #fff1f2;
+  --expense-text: #be123c;
+  --danger: #ef4444;
+  --danger-soft: #fef2f2;
+  --success: #10b981;
+  --success-soft: #ecfdf5;
+  --warning: #f59e0b;
+  --warning-soft: #fffbeb;
+  --chart-grid: #f1effa;
+  --chart-tooltip: #ffffff;
+  --focus: #6366f1;
+  --category-1: #6366f1;
+  --category-2: #f43f5e;
+  --category-3: #f59e0b;
+  --category-4: #06b6d4;
+  --category-5: #a855f7;
+  --category-6: #64748b;
+}
+
+.dark {
+  color-scheme: dark;
+  --page: #0c0919;
+  --surface: #141029;
+  --surface-alt: #1c173b;
+  --foreground: #f8fafc;
+  --foreground-soft: #e2e8f0;
+  --muted: #9891b8;
+  --muted-soft: #6c648d;
+  --border: #292152;
+  --border-soft: #201a42;
+  --primary: #7c5dfa;
+  --primary-strong: #8b6efa;
+  --primary-hover: #7353f0;
+  --on-primary: #ffffff;
+  --primary-soft: #241c52;
+  --primary-soft-hover: #312569;
+  --sidebar: #100c26;
+  --sidebar-end: #070512;
+  --sidebar-text: #f8fafc;
+  --sidebar-muted: #9891b8;
+  --sidebar-active: #2e2468;
+  --sidebar-active-text: #ffffff;
+  --hero-wave-1: rgba(124, 93, 250, 0.15);
+  --hero-wave-2: rgba(99, 68, 222, 0.22);
+  --hero-wave-3: rgba(139, 92, 246, 0.28);
+  --hero-wave-soft: rgba(79, 70, 229, 0.08);
+  --income: #34d399;
+  --income-soft: #064e3b;
+  --income-text: #6ee7b7;
+  --expense: #fb7185;
+  --expense-soft: #4c0519;
+  --expense-text: #fda4af;
+  --danger: #f87171;
+  --danger-soft: #450a0a;
+  --success: #34d399;
+  --success-soft: #064e3b;
+  --warning: #fbbf24;
+  --warning-soft: #451a03;
+  --chart-grid: #1e1846;
+  --chart-tooltip: #1a1636;
+  --focus: #818cf8;
+  --category-1: #818cf8;
+  --category-2: #fb7185;
+  --category-3: #fbbf24;
+  --category-4: #22d3ee;
+  --category-5: #c084fc;
+  --category-6: #94a3b8;
+}
+
+@theme inline {
+  --color-page: var(--page);
+  --color-surface: var(--surface);
+  --color-surface-alt: var(--surface-alt);
+  --color-foreground: var(--foreground);
+  --color-foreground-soft: var(--foreground-soft);
+  --color-muted: var(--muted);
+  --color-muted-soft: var(--muted-soft);
+  --color-border: var(--border);
+  --color-border-soft: var(--border-soft);
+  --color-primary: var(--primary);
+  --color-primary-strong: var(--primary-strong);
+  --color-primary-hover: var(--primary-hover);
+  --color-on-primary: var(--on-primary);
+  --color-primary-soft: var(--primary-soft);
+  --color-primary-soft-hover: var(--primary-soft-hover);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-text: var(--sidebar-text);
+  --color-sidebar-muted: var(--sidebar-muted);
+  --color-sidebar-active: var(--sidebar-active);
+  --color-sidebar-active-text: var(--sidebar-active-text);
+  --color-income: var(--income);
+  --color-income-soft: var(--income-soft);
+  --color-income-text: var(--income-text);
+  --color-expense: var(--expense);
+  --color-expense-soft: var(--expense-soft);
+  --color-expense-text: var(--expense-text);
+  --color-danger: var(--danger);
+  --color-danger-soft: var(--danger-soft);
+  --color-success: var(--success);
+  --color-success-soft: var(--success-soft);
+  --color-warning: var(--warning);
+  --color-warning-soft: var(--warning-soft);
+  --color-chart-grid: var(--chart-grid);
+  --color-chart-tooltip: var(--chart-tooltip);
+  --color-focus: var(--focus);
+  --color-category-1: var(--category-1);
+  --color-category-2: var(--category-2);
+  --color-category-3: var(--category-3);
+  --color-category-4: var(--category-4);
+  --color-category-5: var(--category-5);
+  --color-category-6: var(--category-6);
+  --font-sans: var(--font-geist-sans);
+}
+
+body {
+  background: var(--page);
+  color: var(--foreground);
+}
+
+:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
+}
