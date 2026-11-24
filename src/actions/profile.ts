@@ -1,8 +1,13 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { cookies } from "next/headers";
 import { z } from "zod";
 import { createClient } from "@/lib/supabase/server";
+import {
+  CURRENCY_COOKIE_NAME,
+  isValidCurrency,
+} from "@/lib/utils/currency";
 
 export type ActionResult = {
   success: boolean;
@@ -16,6 +21,7 @@ const updateProfileSchema = z.object({
     .trim()
     .min(2, "Nama minimal 2 karakter.")
     .max(60, "Nama maksimal 60 karakter."),
+  avatar_url: z.string().max(1_500_000, "Ukuran foto terlalu besar.").nullable().optional(),
 });
 
 const updatePasswordSchema = z
@@ -35,12 +41,20 @@ export async function updateProfileAction(
   formData: FormData,
 ): Promise<ActionResult> {
   const nama = formData.get("nama") as string;
-  const parsed = updateProfileSchema.safeParse({ nama });
+  const rawAvatar = formData.get("avatar_url");
+  const avatar_url =
+    typeof rawAvatar === "string" && rawAvatar.trim().length > 0
+      ? rawAvatar.trim()
+      : rawAvatar === ""
+        ? null
+        : undefined;
+
+  const parsed = updateProfileSchema.safeParse({ nama, avatar_url });
 
   if (!parsed.success) {
     return {
       success: false,
-      error: parsed.error.issues[0]?.message ?? "Nama tidak valid.",
+      error: parsed.error.issues[0]?.message ?? "Data profil tidak valid.",
     };
   }
 
@@ -54,17 +68,22 @@ export async function updateProfileAction(
       return { success: false, error: "Sesi berakhir. Silakan login kembali." };
     }
 
-    // Update in profiles table
+    const updatePayload: { nama: string; avatar_url?: string | null } = {
+      nama: parsed.data.nama,
+    };
+    if (parsed.data.avatar_url !== undefined) {
+      updatePayload.avatar_url = parsed.data.avatar_url;
+    }
+
     const { error: profileError } = await supabase
       .from("profiles")
-      .update({ nama: parsed.data.nama })
+      .update(updatePayload)
       .eq("id", user.id);
 
     if (profileError) {
       return { success: false, error: "Gagal memperbarui profil." };
     }
 
-    // Update in auth user metadata
     await supabase.auth.updateUser({
       data: {
         nama: parsed.data.nama,
@@ -123,3 +142,24 @@ export async function updatePasswordAction(
   }
 }
 
+export async function updateCurrencyAction(
+  currency: string,
+): Promise<ActionResult> {
+  if (!isValidCurrency(currency)) {
+    return { success: false, error: "Mata uang tidak didukung." };
+  }
+
+  try {
+    const cookieStore = await cookies();
+    cookieStore.set(CURRENCY_COOKIE_NAME, currency, {
+      path: "/",
+      maxAge: 60 * 60 * 24 * 365,
+      sameSite: "lax",
+    });
+
+    revalidatePath("/", "layout");
+    return { success: true, message: `Mata uang diubah ke ${currency}.` };
+  } catch {
+    return { success: false, error: "Gagal menyimpan preferensi mata uang." };
+  }
+}

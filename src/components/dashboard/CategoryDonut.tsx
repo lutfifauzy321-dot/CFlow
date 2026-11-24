@@ -1,8 +1,9 @@
 "use client";
 
+import { useState } from "react";
 import { Cell, Pie, PieChart, ResponsiveContainer, Tooltip } from "recharts";
-import { PieChart as PieIcon, ChevronDown } from "lucide-react";
-import { formatRupiah } from "@/lib/utils/format";
+import { PieChart as PieIcon } from "lucide-react";
+import { useCurrency } from "@/components/providers/CurrencyProvider";
 import type { CategorySpending } from "@/services/dashboard.service";
 
 // Palette matching the screenshot's vibrant colorful donut: Purple, Coral, Amber, Cyan, Lavender
@@ -19,46 +20,78 @@ const modernPalette = [
 export function CategoryDonut({
   categories,
   total,
+  incomeCategories = [],
+  incomeTotal = 0,
   bulanLabel,
 }: {
   categories: CategorySpending[];
   total: number;
+  incomeCategories?: CategorySpending[];
+  incomeTotal?: number;
   bulanLabel?: string;
 }) {
+  const { formatMoney } = useCurrency();
+  const [selectedType, setSelectedType] = useState<"keluar" | "masuk">("keluar");
+  const activeCategories = selectedType === "keluar" ? categories : incomeCategories;
+  const activeTotal = selectedType === "keluar" ? total : incomeTotal;
+
   return (
     <section
       className="rounded-3xl border border-border/80 bg-surface p-5 sm:p-6 shadow-xs flex flex-col justify-between"
-      aria-label="Pengeluaran per kategori"
+      aria-label="Distribusi per kategori"
     >
       {/* Header matching screenshot */}
-      <div className="flex items-start justify-between gap-3">
+      <div className="flex flex-wrap items-start justify-between gap-3">
         <div className="flex items-start gap-3">
           <span className="grid size-10 shrink-0 place-items-center rounded-2xl bg-purple-100 text-[#5b3fc8] dark:bg-purple-950/60 dark:text-purple-300 shadow-xs">
             <PieIcon size={20} strokeWidth={2.2} />
           </span>
           <div>
             <h2 className="text-base sm:text-lg font-bold text-foreground font-sans">
-              Pengeluaran per Kategori
+              {selectedType === "keluar" ? "Pengeluaran per Kategori" : "Pemasukan per Kategori"}
             </h2>
             <p className="text-xs text-muted">
-              Distribusi pengeluaranmu berdasarkan kategori
+              {selectedType === "keluar"
+                ? "Distribusi pengeluaranmu berdasarkan kategori"
+                : "Distribusi pemasukanmu berdasarkan kategori"}
+              {bulanLabel ? ` (${bulanLabel})` : ""}
             </p>
           </div>
         </div>
 
-        {/* Month Pill Badge */}
-        {bulanLabel && (
-          <div className="hidden sm:flex items-center gap-1.5 rounded-full border border-border/80 bg-surface-alt px-3 py-1 text-xs font-medium text-foreground-soft">
-            <span>{bulanLabel}</span>
-            <ChevronDown size={14} className="text-muted" />
-          </div>
-        )}
+        {/* Toggle Pengeluaran / Pemasukan */}
+        <div className="flex items-center rounded-full bg-surface-alt p-1 border border-border/60">
+          <button
+            type="button"
+            onClick={() => setSelectedType("keluar")}
+            className={`rounded-full px-3 py-1 text-xs font-semibold transition-all ${
+              selectedType === "keluar"
+                ? "bg-rose-500 text-white shadow-xs"
+                : "text-muted hover:text-foreground"
+            }`}
+          >
+            Pengeluaran
+          </button>
+          <button
+            type="button"
+            onClick={() => setSelectedType("masuk")}
+            className={`rounded-full px-3 py-1 text-xs font-semibold transition-all ${
+              selectedType === "masuk"
+                ? "bg-emerald-600 text-white shadow-xs"
+                : "text-muted hover:text-foreground"
+            }`}
+          >
+            Pemasukan
+          </button>
+        </div>
       </div>
 
-      {categories.length === 0 ? (
+      {activeCategories.length === 0 ? (
         <div className="grid min-h-60 place-items-center text-center">
           <p className="max-w-60 text-xs sm:text-sm leading-6 text-muted">
-            Belum ada pengeluaran yang tercatat pada bulan ini.
+            {selectedType === "keluar"
+              ? "Belum ada pengeluaran yang tercatat pada bulan ini."
+              : "Belum ada pemasukan yang tercatat pada bulan ini."}
           </p>
         </div>
       ) : (
@@ -66,9 +99,9 @@ export function CategoryDonut({
           {/* Donut Chart Canvas */}
           <div className="relative mx-auto h-52 sm:h-56 w-full max-w-56">
             <ResponsiveContainer width="100%" height="100%">
-              <PieChart>
+              <PieChart key={selectedType}>
                 <Pie
-                  data={categories}
+                  data={activeCategories}
                   dataKey="nominal"
                   nameKey="nama"
                   innerRadius="65%"
@@ -76,8 +109,9 @@ export function CategoryDonut({
                   paddingAngle={3}
                   stroke="none"
                   cornerRadius={6}
+                  isAnimationActive={false}
                 >
-                  {categories.map((category, index) => (
+                  {activeCategories.map((category, index) => (
                     <Cell
                       key={category.id}
                       fill={modernPalette[index % modernPalette.length]}
@@ -85,7 +119,10 @@ export function CategoryDonut({
                   ))}
                 </Pie>
                 <Tooltip
-                  formatter={(value) => [formatRupiah(Number(value)), "Pengeluaran"]}
+                  formatter={(value) => [
+                    formatMoney(Number(value)),
+                    selectedType === "keluar" ? "Pengeluaran" : "Pemasukan",
+                  ]}
                   contentStyle={{
                     border: "1px solid var(--color-border)",
                     backgroundColor: "var(--color-surface)",
@@ -101,9 +138,9 @@ export function CategoryDonut({
 
           {/* Legend with percentages matching screenshot */}
           <div className="space-y-2.5">
-            {categories.slice(0, 5).map((category, index) => {
+            {activeCategories.slice(0, 5).map((category, index) => {
               const color = modernPalette[index % modernPalette.length];
-              const percentage = total > 0 ? Math.round((category.nominal / total) * 100) : 0;
+              const percentage = activeTotal > 0 ? Math.round((category.nominal / activeTotal) * 100) : 0;
 
               return (
                 <div

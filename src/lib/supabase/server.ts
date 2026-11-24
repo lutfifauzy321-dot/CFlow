@@ -56,3 +56,13 @@ export const getCurrentUser = cache(async (): Promise<AuthUser | null> => {
   if (!user) return null;
   return { id: user.id, email: user.email ?? "" };
 });
+
+export const getCurrentProfile = cache(async (userId: string) => {
+  const supabase = await createClient();
+  const { data } = await supabase
+    .from("profiles")
+    .select("nama, email, avatar_url")
+    .eq("id", userId)
+    .maybeSingle();
+  return data;
+});

@@ -1,20 +1,23 @@
 import { redirect } from "next/navigation";
 import { SettingsManager } from "@/components/management/SettingsManager";
-import { createClient, getCurrentUser } from "@/lib/supabase/server";
+import { createClient, getCurrentProfile, getCurrentUser } from "@/lib/supabase/server";
 
-export default async function PengaturanPage() {
+type SearchParams = Record<string, string | string[] | undefined>;
+
+export default async function PengaturanPage({
+  searchParams,
+}: {
+  searchParams: Promise<SearchParams>;
+}) {
+  const params = await searchParams;
   const user = await getCurrentUser();
   if (!user) redirect("/login");
 
   const supabase = await createClient();
 
-  const [profileResult, transactionsCountResult, categoriesCountResult] =
+  const [profile, transactionsCountResult, categoriesCountResult] =
     await Promise.all([
-      supabase
-        .from("profiles")
-        .select("nama, email")
-        .eq("id", user.id)
-        .maybeSingle(),
+      getCurrentProfile(user.id),
       supabase
         .from("transactions")
         .select("id", { count: "exact", head: true })
@@ -27,10 +30,11 @@ export default async function PengaturanPage() {
 
   const profileData = {
     id: user.id,
-    email: profileResult.data?.email || user.email || "",
+    email: profile?.email || user.email || "",
     nama:
-      profileResult.data?.nama ||
-      (typeof user.email === "string" ? user.email.split("@")[0] : "David"),
+      profile?.nama ||
+      (typeof user.email === "string" ? user.email.split("@")[0] : "Pengguna"),
+    avatarUrl: profile?.avatar_url ?? null,
   };
 
   const stats = {
@@ -38,9 +42,13 @@ export default async function PengaturanPage() {
     totalCategories: categoriesCountResult.count ?? 0,
   };
 
+  const rawTab = Array.isArray(params.tab) ? params.tab[0] : params.tab;
+  const initialTab =
+    rawTab === "security" || rawTab === "preferences" ? rawTab : "profile";
+
   return (
     <div className="mx-auto max-w-360">
-      <SettingsManager user={profileData} stats={stats} />
+      <SettingsManager user={profileData} stats={stats} initialTab={initialTab} />
     </div>
   );
 }

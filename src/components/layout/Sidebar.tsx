@@ -11,8 +11,9 @@ import {
   Trophy,
   ArrowRight,
 } from "lucide-react";
-import type { ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { BrandLogo } from "@/components/brand/BrandLogo";
 import { SidebarItem } from "@/components/layout/SidebarItem";
 
@@ -49,6 +50,22 @@ const navigationGroups = [
 ];
 
 export function Sidebar({ isOpen, onClose, userCard }: SidebarProps) {
+  const pathname = usePathname();
+  const [pendingHref, setPendingHref] = useState<string | null>(null);
+
+  useEffect(() => {
+    setPendingHref(null);
+  }, [pathname]);
+
+  const activePath = pendingHref ?? pathname;
+
+  function handleSelect(href: string) {
+    if (href !== pathname) {
+      setPendingHref(href);
+    }
+    onClose();
+  }
+
   return (
     <>
       {isOpen && (
@@ -61,7 +78,7 @@ export function Sidebar({ isOpen, onClose, userCard }: SidebarProps) {
       )}
       <aside
         aria-label="Navigasi utama"
-        className={`fixed inset-y-0 left-0 z-40 flex w-66 flex-col overflow-hidden bg-gradient-to-b from-[#5024b3] via-[#3d1894] to-[#2a0e68] dark:from-[#120e2e] dark:via-[#0d0922] dark:to-[#070514] px-4 pb-4 pt-5 text-white shadow-2xl transition-transform duration-200 lg:fixed lg:inset-y-0 lg:left-0 lg:z-40 lg:h-screen lg:w-66 lg:shrink-0 lg:translate-x-0 lg:shadow-none ${
+        className={`fixed inset-y-0 left-0 z-40 flex w-66 flex-col overflow-hidden bg-gradient-to-b from-[#5024b3] via-[#341382] to-[#1d094d] dark:from-[#26105c] dark:via-[#140736] dark:to-[#090318] px-4 pb-4 pt-5 text-white shadow-2xl transition-transform duration-200 lg:fixed lg:inset-y-0 lg:left-0 lg:z-40 lg:h-screen lg:w-66 lg:shrink-0 lg:translate-x-0 lg:shadow-none ${
           isOpen ? "translate-x-0" : "-translate-x-full"
         }`}
       >
@@ -108,19 +125,15 @@ export function Sidebar({ isOpen, onClose, userCard }: SidebarProps) {
               fill="url(#sbGrad3)"
             />
           </svg>
-
-          {/* Soft luminous ambient glows for depth */}
-          <div className="absolute -left-10 top-24 h-48 w-48 rounded-full bg-white/10 blur-2xl" />
-          <div className="absolute right-0 bottom-40 h-56 w-56 rounded-full bg-purple-400/15 blur-3xl" />
         </div>
 
         {/* Brand Header */}
-        <div className="relative mb-6 flex h-11 items-center px-2">
+        <div className="relative mb-5 flex h-10 items-center px-2">
           <BrandLogo />
         </div>
 
         {/* Navigation Menus */}
-        <nav className="relative min-h-0 flex-1 space-y-6 overflow-y-auto pr-1" aria-label="Menu">
+        <nav className="relative min-h-0 flex-1 space-y-4 overflow-y-auto pr-1" aria-label="Menu">
           {navigationGroups.map((group) => (
             <div key={group.label}>
               <p className="mb-2 px-3 text-[11px] font-semibold tracking-[0.14em] text-purple-200/60 uppercase">
@@ -129,7 +142,12 @@ export function Sidebar({ isOpen, onClose, userCard }: SidebarProps) {
               <ul className="space-y-1">
                 {group.items.map((item) => (
                   <li key={item.href}>
-                    <SidebarItem {...item} onNavigate={onClose} />
+                    <SidebarItem
+                      {...item}
+                      activePath={activePath}
+                      isNavigatingToThis={pendingHref === item.href && pathname !== item.href}
+                      onSelect={handleSelect}
+                    />
                   </li>
                 ))}
               </ul>
@@ -140,8 +158,9 @@ export function Sidebar({ isOpen, onClose, userCard }: SidebarProps) {
           <div className="pt-2">
             <Link
               href="/anggaran"
+              prefetch={false}
               onClick={onClose}
-              className="group block relative overflow-hidden rounded-2xl bg-white/12 p-3.5 backdrop-blur-md border border-white/20 shadow-sm transition hover:bg-white/18 active:scale-[0.98]"
+              className="group block relative overflow-hidden rounded-2xl bg-white/14 p-3.5 border border-white/20 shadow-sm transition hover:bg-white/20 active:scale-[0.98]"
             >
               <div className="flex items-start justify-between gap-2">
                 <div className="space-y-2">

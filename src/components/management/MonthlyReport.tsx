@@ -1,10 +1,10 @@
 "use client";
 
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { Bar, BarChart, CartesianGrid, Cell, Pie, PieChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { Download } from "lucide-react";
 import { SummaryCard } from "@/components/dashboard/SummaryCard";
-import { formatRupiah } from "@/lib/utils/format";
+import { useCurrency } from "@/components/providers/CurrencyProvider";
 
 type ReportSummary = {
   total_saldo: number;
@@ -67,6 +67,11 @@ export function MonthlyReport({
   transactions,
   categories,
 }: MonthlyReportProps) {
+  const { formatMoney } = useCurrency();
+  const [flowFilter, setFlowFilter] = useState<"all" | "masuk" | "keluar">("all");
+  const [categoryType, setCategoryType] = useState<"keluar" | "masuk">("keluar");
+  const showIncome = flowFilter === "all" || flowFilter === "masuk";
+  const showExpense = flowFilter === "all" || flowFilter === "keluar";
   const monthLabel = new Intl.DateTimeFormat("id-ID", {
     month: "long",
     year: "numeric",
@@ -90,11 +95,11 @@ export function MonthlyReport({
     return [...totals.values()];
   }, [bulan, transactions]);
 
-  const expenseCategories = useMemo(() => {
+  const categoryBreakdown = useMemo(() => {
     const categoryNames = new Map(categories.map((category) => [category.id, category.nama]));
     const totals = new Map<string, number>();
     for (const transaction of transactions) {
-      if (transaction.tipe !== "keluar") continue;
+      if (transaction.tipe !== categoryType) continue;
       totals.set(transaction.category_id, (totals.get(transaction.category_id) ?? 0) + transaction.nominal);
     }
     return [...totals.entries()]
@@ -108,7 +113,7 @@ export function MonthlyReport({
         ...category,
         warna: chartCategoryColors[index % chartCategoryColors.length],
       }));
-  }, [categories, transactions]);
+  }, [categories, transactions, categoryType]);
 
   function exportCsv() {
     const rows = [
@@ -155,12 +160,42 @@ export function MonthlyReport({
       </section>
 
       <section className="grid gap-5 xl:grid-cols-[1.4fr_0.8fr]">
-        <div className="rounded-xl border border-border bg-surface p-4 sm:p-5">
-          <h2 className="text-base font-semibold text-foreground">Pemasukan dan pengeluaran harian</h2>
-          <p className="mt-1 text-xs text-muted">Pergerakan nominal sepanjang {monthLabel}</p>
+        <div className="rounded-3xl border border-border/80 bg-surface p-5 sm:p-6 shadow-xs">
+          <div className="flex flex-wrap items-start justify-between gap-3">
+            <div>
+              <h2 className="text-base font-semibold text-foreground">Pemasukan dan pengeluaran harian</h2>
+              <p className="mt-1 text-xs text-muted">Pergerakan nominal sepanjang {monthLabel}</p>
+            </div>
+            <div className="flex items-center rounded-full bg-surface-alt p-1 border border-border/60">
+              {(
+                [
+                  { key: "all", label: "Semua" },
+                  { key: "masuk", label: "Pemasukan" },
+                  { key: "keluar", label: "Pengeluaran" },
+                ] as const
+              ).map((item) => (
+                <button
+                  key={item.key}
+                  type="button"
+                  onClick={() => setFlowFilter(item.key)}
+                  className={`rounded-full px-3 py-1 text-xs font-semibold transition-all ${
+                    flowFilter === item.key
+                      ? item.key === "masuk"
+                        ? "bg-emerald-600 text-white shadow-xs"
+                        : item.key === "keluar"
+                          ? "bg-rose-500 text-white shadow-xs"
+                          : "bg-primary text-white shadow-xs"
+                      : "text-muted hover:text-foreground"
+                  }`}
+                >
+                  {item.label}
+                </button>
+              ))}
+            </div>
+          </div>
           <div className="mt-5 h-70">
             <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={dailyData} margin={{ top: 8, right: 4, left: 4, bottom: 0 }}>
+              <BarChart key={flowFilter} data={dailyData} margin={{ top: 8, right: 4, left: 4, bottom: 0 }}>
                 <CartesianGrid vertical={false} stroke="var(--chart-grid)" />
                 <XAxis dataKey="hari" tick={{ fill: "var(--muted-soft)", fontSize: 11 }} axisLine={false} tickLine={false} minTickGap={20} />
                 <YAxis
@@ -172,43 +207,71 @@ export function MonthlyReport({
                 />
                 <Tooltip
                   labelFormatter={(value) => `Tanggal ${value}`}
-                  formatter={(value, name) => [formatRupiah(Number(value)), name === "pemasukan" ? "Pemasukan" : "Pengeluaran"]}
+                  formatter={(value, name) => [formatMoney(Number(value)), name === "pemasukan" ? "Pemasukan" : "Pengeluaran"]}
                   contentStyle={{ border: "1px solid var(--border)", borderRadius: 8, backgroundColor: "var(--chart-tooltip)", color: "var(--foreground)", fontSize: 12 }}
                 />
-                <Bar dataKey="pemasukan" name="pemasukan" fill="var(--income)" radius={[3, 3, 0, 0]} />
-                <Bar dataKey="pengeluaran" name="pengeluaran" fill="var(--expense)" radius={[3, 3, 0, 0]} />
+                {showIncome && <Bar dataKey="pemasukan" name="pemasukan" fill="var(--income)" radius={[3, 3, 0, 0]} isAnimationActive={false} />}
+                {showExpense && <Bar dataKey="pengeluaran" name="pengeluaran" fill="var(--expense)" radius={[3, 3, 0, 0]} isAnimationActive={false} />}
               </BarChart>
             </ResponsiveContainer>
           </div>
           <div className="mt-3 flex gap-5 border-t border-border-soft pt-3 text-xs text-muted">
-            <span className="inline-flex items-center gap-2"><span className="size-2 rounded-full bg-income" />Pemasukan</span>
-            <span className="inline-flex items-center gap-2"><span className="size-2 rounded-full bg-expense" />Pengeluaran</span>
+            {showIncome && <span className="inline-flex items-center gap-2"><span className="size-2 rounded-full bg-income" />Pemasukan</span>}
+            {showExpense && <span className="inline-flex items-center gap-2"><span className="size-2 rounded-full bg-expense" />Pengeluaran</span>}
           </div>
         </div>
 
-        <div className="rounded-xl border border-border bg-surface p-4 sm:p-5">
-          <h2 className="text-base font-semibold text-foreground">Komposisi pengeluaran</h2>
-          <p className="mt-1 text-xs text-muted">Berdasarkan kategori</p>
-          {expenseCategories.length === 0 ? (
-            <p className="grid min-h-70 place-items-center text-center text-sm text-muted">Belum ada pengeluaran bulan ini.</p>
+        <div className="rounded-3xl border border-border/80 bg-surface p-5 sm:p-6 shadow-xs">
+          <div className="flex flex-wrap items-start justify-between gap-2">
+            <div>
+              <h2 className="text-base font-semibold text-foreground">
+                {categoryType === "keluar" ? "Komposisi pengeluaran" : "Komposisi pemasukan"}
+              </h2>
+              <p className="mt-1 text-xs text-muted">Berdasarkan kategori</p>
+            </div>
+            <div className="flex items-center rounded-full bg-surface-alt p-1 border border-border/60">
+              <button
+                type="button"
+                onClick={() => setCategoryType("keluar")}
+                className={`rounded-full px-2.5 py-1 text-[11px] font-semibold transition-all ${
+                  categoryType === "keluar" ? "bg-rose-500 text-white shadow-xs" : "text-muted hover:text-foreground"
+                }`}
+              >
+                Keluar
+              </button>
+              <button
+                type="button"
+                onClick={() => setCategoryType("masuk")}
+                className={`rounded-full px-2.5 py-1 text-[11px] font-semibold transition-all ${
+                  categoryType === "masuk" ? "bg-emerald-600 text-white shadow-xs" : "text-muted hover:text-foreground"
+                }`}
+              >
+                Masuk
+              </button>
+            </div>
+          </div>
+          {categoryBreakdown.length === 0 ? (
+            <p className="grid min-h-70 place-items-center text-center text-sm text-muted">
+              {categoryType === "keluar" ? "Belum ada pengeluaran bulan ini." : "Belum ada pemasukan bulan ini."}
+            </p>
           ) : (
             <>
               <div className="mx-auto mt-2 h-55 max-w-70">
                 <ResponsiveContainer width="100%" height="100%">
-                  <PieChart>
-                    <Pie data={expenseCategories} dataKey="nominal" nameKey="nama" innerRadius="60%" outerRadius="84%" paddingAngle={2} stroke="none">
-                      {expenseCategories.map((category) => <Cell key={category.id} fill={category.warna} />)}
+                  <PieChart key={categoryType}>
+                    <Pie data={categoryBreakdown} dataKey="nominal" nameKey="nama" innerRadius="60%" outerRadius="84%" paddingAngle={2} stroke="none" isAnimationActive={false}>
+                      {categoryBreakdown.map((category) => <Cell key={category.id} fill={category.warna} />)}
                     </Pie>
-                    <Tooltip formatter={(value) => formatRupiah(Number(value))} contentStyle={{ border: "1px solid var(--border)", borderRadius: 8, backgroundColor: "var(--chart-tooltip)", color: "var(--foreground)", fontSize: 12 }} />
+                    <Tooltip formatter={(value) => formatMoney(Number(value))} contentStyle={{ border: "1px solid var(--border)", borderRadius: 8, backgroundColor: "var(--chart-tooltip)", color: "var(--foreground)", fontSize: 12 }} />
                   </PieChart>
                 </ResponsiveContainer>
               </div>
               <ul className="space-y-2.5">
-                {expenseCategories.slice(0, 5).map((category) => (
+                {categoryBreakdown.slice(0, 5).map((category) => (
                   <li key={category.id} className="flex items-center gap-2 text-sm">
                     <span className="size-2.5 shrink-0 rounded-sm" style={{ backgroundColor: category.warna }} />
                     <span className="min-w-0 flex-1 truncate text-foreground-soft">{category.nama}</span>
-                    <span className="shrink-0 text-xs font-medium tabular-nums text-foreground-soft">{formatRupiah(category.nominal)}</span>
+                    <span className="shrink-0 text-xs font-medium tabular-nums text-foreground-soft">{formatMoney(category.nominal)}</span>
                   </li>
                 ))}
               </ul>
@@ -217,7 +280,7 @@ export function MonthlyReport({
         </div>
       </section>
 
-      <section className="overflow-hidden rounded-xl border border-border bg-surface">
+      <section className="overflow-hidden rounded-3xl border border-border/80 bg-surface shadow-xs">
         <div className="border-b border-border-soft px-4 py-4 sm:px-5">
           <h2 className="text-base font-semibold text-foreground">Rincian transaksi</h2>
           <p className="mt-1 text-xs text-muted">{transactions.length} transaksi pada bulan ini</p>
@@ -236,7 +299,7 @@ export function MonthlyReport({
                     <td className="px-5 py-3 text-sm text-muted">{categoryNameById.get(transaction.category_id) ?? "Kategori dihapus"}</td>
                     <td className="px-5 py-3 text-sm text-muted">{transaction.tipe === "masuk" ? "Pemasukan" : "Pengeluaran"}</td>
                     <td className={`whitespace-nowrap px-5 py-3 text-right text-sm font-semibold tabular-nums ${transaction.tipe === "masuk" ? "text-income" : "text-expense"}`}>
-                      {transaction.tipe === "masuk" ? "+ " : "- "}{formatRupiah(transaction.nominal)}
+                      {transaction.tipe === "masuk" ? "+ " : "- "}{formatMoney(transaction.nominal)}
                     </td>
                   </tr>
                 ))}

@@ -49,7 +49,7 @@ export function AddTransactionModal({
         role="dialog"
         aria-modal="true"
         aria-labelledby="transaction-modal-title"
-        className="relative max-h-[92vh] w-full max-w-140 overflow-y-auto rounded-t-xl border border-border bg-surface p-5 shadow-xl sm:rounded-xl sm:p-6"
+        className="relative max-h-[92vh] w-full max-w-140 overflow-y-auto rounded-t-3xl border border-border bg-white/95 dark:bg-[#161032]/95 p-5 shadow-2xl sm:rounded-3xl sm:p-6"
       >
         <div className="mb-5 flex items-start justify-between gap-4">
           <div className="flex items-start gap-3">

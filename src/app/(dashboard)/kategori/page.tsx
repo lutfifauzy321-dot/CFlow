@@ -12,9 +12,15 @@ export default async function KategoriPage() {
   return (
     <div className="mx-auto max-w-360 space-y-6">
       <div>
-        <p className="text-sm font-medium text-primary">Pengelompokan transaksi</p>
-        <h1 className="mt-1 text-2xl font-semibold text-foreground">Kategori</h1>
-        <p className="mt-1.5 text-sm text-muted">Sesuaikan kategori untuk mencatat arus uangmu.</p>
+        <span className="text-xs font-semibold uppercase tracking-wider text-primary">
+          Pengelompokan Transaksi
+        </span>
+        <h1 className="mt-1 text-2xl sm:text-3xl font-bold tracking-tight text-foreground">
+          Kategori
+        </h1>
+        <p className="mt-1 text-xs sm:text-sm text-muted">
+          Sesuaikan kategori untuk mencatat arus uangmu.
+        </p>
       </div>
       <CategoryManager categories={categories} />
     </div>

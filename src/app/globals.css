@@ -4,15 +4,15 @@
 
 :root {
   color-scheme: light;
-  --page: #f7f6fd;
-  --surface: #ffffff;
-  --surface-alt: #f1effa;
+  --page: #f4f0fe;
+  --surface: rgba(255, 255, 255, 0.68);
+  --surface-alt: rgba(237, 231, 254, 0.58);
   --foreground: #140d33;
   --foreground-soft: #2f2554;
   --muted: #6b6388;
   --muted-soft: #9c95b6;
-  --border: #ece8f6;
-  --border-soft: #f4f1fb;
+  --border: rgba(124, 93, 250, 0.18);
+  --border-soft: rgba(124, 93, 250, 0.11);
   --primary: #552cb8;
   --primary-strong: #4721a3;
   --primary-hover: #4c25ab;
@@ -55,14 +55,14 @@
 .dark {
   color-scheme: dark;
   --page: #0c0919;
-  --surface: #141029;
-  --surface-alt: #1c173b;
+  --surface: rgba(24, 15, 54, 0.62);
+  --surface-alt: rgba(38, 24, 82, 0.55);
   --foreground: #f8fafc;
   --foreground-soft: #e2e8f0;
   --muted: #9891b8;
   --muted-soft: #6c648d;
-  --border: #292152;
-  --border-soft: #201a42;
+  --border: rgba(167, 139, 250, 0.22);
+  --border-soft: rgba(167, 139, 250, 0.13);
   --primary: #7c5dfa;
   --primary-strong: #8b6efa;
   --primary-hover: #7353f0;
@@ -155,4 +155,80 @@ body {
 :focus-visible {
   outline: 2px solid var(--focus);
   outline-offset: 2px;
+}
+
+/* Custom Sleek Scrollbar (WebKit pseudo-elements only so Chromium does not revert to native OS arrow scrollbars) */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-button {
+  display: none;
+  width: 0;
+  height: 0;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-corner {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(109, 59, 217, 0.28);
+  border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(109, 59, 217, 0.55);
+}
+
+.dark ::-webkit-scrollbar-thumb {
+  background: rgba(139, 92, 246, 0.35);
+}
+
+.dark ::-webkit-scrollbar-thumb:hover {
+  background: rgba(139, 92, 246, 0.65);
+}
+
+/* Sidebar internal scrollbar */
+aside nav::-webkit-scrollbar {
+  width: 4px;
+}
+
+aside nav::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+aside nav::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.4);
+}
+
+/* Keep browser autofill inputs matching Light & Dark theme nicely */
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus {
+  -webkit-text-fill-color: var(--foreground);
+  -webkit-box-shadow: 0 0 0px 1000px #f6f3ff inset;
+  transition: background-color 5000s ease-in-out 0s;
+}
+
+.dark input:-webkit-autofill,
+.dark input:-webkit-autofill:hover,
+.dark input:-webkit-autofill:focus {
+  -webkit-text-fill-color: #f8fafc;
+  -webkit-box-shadow: 0 0 0px 1000px #1b123d inset;
+}
+
+/* Hide browser native search cancel X so custom clear button does not duplicate */
+input[type="search"]::-webkit-search-decoration,
+input[type="search"]::-webkit-search-cancel-button,
+input[type="search"]::-webkit-search-results-button,
+input[type="search"]::-webkit-search-results-decoration {
+  -webkit-appearance: none;
+  appearance: none;
+  display: none;
 }

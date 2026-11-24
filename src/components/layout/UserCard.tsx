@@ -1,39 +1,43 @@
 import { LogOut } from "lucide-react";
 import { logoutAction } from "@/actions/auth";
-import { createClient, getCurrentUser } from "@/lib/supabase/server";
+import { getCurrentProfile, getCurrentUser } from "@/lib/supabase/server";
 
 export async function UserCard() {
   const user = await getCurrentUser();
   if (!user) return null;
 
-  const supabase = await createClient();
-  const { data: profile } = await supabase
-    .from("profiles")
-    .select("nama, email")
-    .eq("id", user.id)
-    .maybeSingle();
+  const profile = await getCurrentProfile(user.id);
 
   const name =
     profile?.nama ||
     (typeof user.email === "string" && user.email.split("@")[0]) ||
-    "David Arnoldio";
-  const email = profile?.email || user.email || "david@email.com";
+    "Pengguna";
+  const email = profile?.email || user.email || "";
+  const avatarUrl = profile?.avatar_url;
 
-  // Initials (e.g., "DA")
-  const initials = name
-    .split(" ")
-    .map((part) => part[0])
-    .filter(Boolean)
-    .slice(0, 2)
-    .join("")
-    .toUpperCase() || "DA";
+  const initials =
+    name
+      .split(" ")
+      .map((part) => part[0])
+      .filter(Boolean)
+      .slice(0, 2)
+      .join("")
+      .toUpperCase() || "CF";
 
   return (
     <div className="flex items-center gap-3 px-1 py-1">
-      {/* Avatar Pill matching mockup */}
-      <div className="grid size-9.5 shrink-0 place-items-center rounded-full bg-white/20 text-xs font-bold tracking-tight text-white border border-white/20 shadow-xs">
-        {initials}
-      </div>
+      {avatarUrl ? (
+        /* eslint-disable-next-line @next/next/no-img-element */
+        <img
+          src={avatarUrl}
+          alt={name}
+          className="size-9.5 shrink-0 rounded-full object-cover border border-white/30 shadow-xs"
+        />
+      ) : (
+        <div className="grid size-9.5 shrink-0 place-items-center rounded-full bg-white/20 text-xs font-bold tracking-tight text-white border border-white/20 shadow-xs">
+          {initials}
+        </div>
+      )}
 
       <div className="min-w-0 flex-1">
         <p className="truncate text-sm font-semibold text-white leading-tight">

@@ -61,7 +61,7 @@ export function DashboardGreetingBanner({ userName }: DashboardGreetingBannerPro
         {/* Left Column: Greeting & Copy */}
         <div className="max-w-md lg:max-w-xl space-y-2">
           <p className="text-sm sm:text-base font-semibold text-foreground-soft flex items-center gap-1.5">
-            Halo, {firstName} <span className="inline-block animate-bounce">👋</span>
+            Halo, {firstName} <span className="inline-block">👋</span>
           </p>
           <h1 className="text-2xl sm:text-3xl lg:text-[38px] font-extrabold tracking-tight text-foreground font-sans leading-[1.18]">
             Atur arus uangmu <br className="hidden sm:inline" />
@@ -75,7 +75,7 @@ export function DashboardGreetingBanner({ userName }: DashboardGreetingBannerPro
         {/* Right Column: Health Status Pill Badge + 3D Wallet & Coins with generous breathing room */}
         <div className="relative flex items-center justify-between sm:justify-end gap-5 sm:gap-8 lg:gap-12 shrink-0 pr-4 sm:pr-8 lg:pr-12">
           {/* Health Status Pill Badge matching reference crop */}
-          <div className="flex items-center gap-3 rounded-full bg-white dark:bg-[#1a1438] px-4 sm:px-5 py-2.5 text-xs font-semibold text-foreground shadow-[0_8px_24px_rgba(100,60,200,0.08)] dark:shadow-[0_8px_24px_rgba(0,0,0,0.4)] border border-purple-100/80 dark:border-purple-800/40 backdrop-blur-md transition-transform hover:scale-105 shrink-0">
+          <div className="flex items-center gap-3 rounded-full bg-white dark:bg-[#1a1438] px-4 sm:px-5 py-2.5 text-xs font-semibold text-foreground shadow-sm border border-purple-100/80 dark:border-purple-800/40 shrink-0">
             <span className="grid size-6 sm:size-7 place-items-center rounded-full bg-emerald-500 text-white shrink-0 shadow-xs">
               <CheckCircle2 size={16} strokeWidth={2.8} />
             </span>
@@ -91,21 +91,18 @@ export function DashboardGreetingBanner({ userName }: DashboardGreetingBannerPro
 
           {/* 3D Purple Wallet & Floating Golden Coins Illustration */}
           <div className="relative select-none shrink-0 py-2">
-            {/* Diffuse soft ground shadow beneath the wallet */}
-            <div className="absolute bottom-0 left-4 right-6 h-5 rounded-full bg-purple-950/20 dark:bg-purple-500/15 blur-lg" />
-
             {/* Floating Gold Coin 1 (top-left) */}
-            <div className="absolute -left-4 -top-1.5 size-7 sm:size-8 rounded-full bg-gradient-to-tr from-amber-500 via-amber-400 to-yellow-200 shadow-lg shadow-amber-500/30 border-2 border-yellow-100 flex items-center justify-center animate-bounce duration-1000 z-20">
+            <div className="absolute -left-4 -top-1.5 size-7 sm:size-8 rounded-full bg-gradient-to-tr from-amber-500 via-amber-400 to-yellow-200 shadow-md border-2 border-yellow-100 flex items-center justify-center z-20">
               <div className="size-3.5 sm:size-4 rounded-full border border-amber-600/40 bg-amber-400/20" />
             </div>
 
             {/* Floating Gold Coin 2 (top-right) */}
-            <div className="absolute -right-3 -top-2 size-8 sm:size-9 rounded-full bg-gradient-to-tr from-amber-500 via-amber-400 to-yellow-200 shadow-xl shadow-amber-500/30 border-2 border-yellow-100 flex items-center justify-center rotate-12 z-20">
+            <div className="absolute -right-3 -top-2 size-8 sm:size-9 rounded-full bg-gradient-to-tr from-amber-500 via-amber-400 to-yellow-200 shadow-md border-2 border-yellow-100 flex items-center justify-center rotate-12 z-20">
               <div className="size-4 sm:size-4.5 rounded-full border border-amber-600/40 bg-amber-400/20" />
             </div>
 
             {/* 3D Purple Wallet SVG with ample viewBox so nothing is clipped */}
-            <div className="relative size-24 sm:size-28 drop-shadow-2xl transition-transform hover:rotate-2 duration-300">
+            <div className="relative size-24 sm:size-28">
               <svg viewBox="0 0 140 125" fill="none" className="size-full overflow-visible">
                 <defs>
                   <linearGradient id="wGradBody" x1="20" y1="20" x2="115" y2="110" gradientUnits="userSpaceOnUse">

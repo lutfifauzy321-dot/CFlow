@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { ArrowDown, ArrowUpRight, ChevronRight, Target, Wallet } from "lucide-react";
-import { formatRupiah } from "@/lib/utils/format";
+import { Money } from "@/components/ui/Money";
 
 type Tone = "balance" | "income" | "expense" | "budget";
 
@@ -54,7 +54,6 @@ export function SummaryCard({ title, value, change, tone, href }: SummaryCardPro
   return (
     <Link
       href={linkHref}
-      prefetch={true}
       className="group relative flex flex-col justify-between overflow-hidden rounded-3xl border border-border bg-surface p-5 shadow-xs transition-all duration-200 hover:-translate-y-1 hover:shadow-md hover:border-primary/30"
     >
       {/* Top row: Icon + Title + Chevron */}
@@ -76,7 +75,7 @@ export function SummaryCard({ title, value, change, tone, href }: SummaryCardPro
         {/* Nominal Value */}
         <div className="mt-4">
           <p className="text-xl sm:text-2xl font-bold tracking-tight text-foreground tabular-nums font-sans">
-            {formatRupiah(value)}
+            <Money amount={value} />
           </p>
         </div>
 

@@ -5,8 +5,7 @@ import { DashboardGreetingBanner } from "@/components/dashboard/DashboardGreetin
 import { RecentTransactions } from "@/components/dashboard/RecentTransactions";
 import { SummaryCard } from "@/components/dashboard/SummaryCard";
 import { TopCategories } from "@/components/dashboard/TopCategories";
-import { createClient, getCurrentUser } from "@/lib/supabase/server";
-import { getBudgetProgress } from "@/services/budget.service";
+import { createClient, getCurrentProfile, getCurrentUser } from "@/lib/supabase/server";
 import {
   getCashFlowHistory,
   getCategorySpending,
@@ -51,20 +50,24 @@ export default async function DashboardPage({
     monthTransactions,
     cashFlowHistory,
     recentTransactions,
-    budgetOverview,
-    profileResult,
+    budgetsResult,
+    profile,
   ] = await Promise.all([
     getDashboardSummary(bulan),
     getDashboardCategories(user.id),
     getDashboardMonthTransactions(user.id, bulan),
     getCashFlowHistory(user.id, bulan),
     getRecentTransactions(user.id),
-    getBudgetProgress(user.id, bulan),
-    supabase.from("profiles").select("nama").eq("id", user.id).maybeSingle(),
+    supabase
+      .from("budgets")
+      .select("limit_nominal")
+      .eq("user_id", user.id)
+      .eq("bulan", `${bulan}-01`),
+    getCurrentProfile(user.id),
   ]);
 
   const userName =
-    profileResult?.data?.nama ||
+    profile?.nama ||
     (typeof user.email === "string" ? user.email.split("@")[0] : "David");
 
   const [year, monthNumber] = bulan.split("-").map(Number);
@@ -73,7 +76,8 @@ export default async function DashboardPage({
     year: "numeric",
   }).format(new Date(year, monthNumber - 1, 1));
 
-  const categorySpending = getCategorySpending(categories, monthTransactions);
+  const categorySpending = getCategorySpending(categories, monthTransactions, "keluar");
+  const categoryIncome = getCategorySpending(categories, monthTransactions, "masuk");
   const categoryNames = new Map(
     categories.map((category) => [category.id, category.nama]),
   );
@@ -85,11 +89,19 @@ export default async function DashboardPage({
     (total, category) => total + category.nominal,
     0,
   );
+  const totalPemasukanKategori = categoryIncome.reduce(
+    (total, category) => total + category.nominal,
+    0,
+  );
 
   // Sisa Anggaran: remaining budget or net savings
+  const totalBudgetLimit = (budgetsResult.data ?? []).reduce(
+    (sum, b) => sum + Number(b.limit_nominal ?? 0),
+    0,
+  );
   const sisaAnggaran =
-    budgetOverview.totalLimit > 0
-      ? Math.max(0, budgetOverview.totalLimit - budgetOverview.totalSpent)
+    totalBudgetLimit > 0
+      ? Math.max(0, totalBudgetLimit - totalPengeluaranKategori)
       : Math.max(0, summary.total_pemasukan - summary.total_pengeluaran);
 
   return (
@@ -136,11 +148,15 @@ export default async function DashboardPage({
         <CategoryDonut
           categories={categorySpending}
           total={totalPengeluaranKategori}
+          incomeCategories={categoryIncome}
+          incomeTotal={totalPemasukanKategori}
           bulanLabel={bulanLabel}
         />
         <TopCategories
           categories={categorySpending.slice(0, 5)}
           total={totalPengeluaranKategori}
+          incomeCategories={categoryIncome.slice(0, 5)}
+          incomeTotal={totalPemasukanKategori}
           bulanLabel={bulanLabel}
         />
       </section>

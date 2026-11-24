@@ -12,9 +12,15 @@ export default async function TargetTabunganPage() {
   return (
     <div className="mx-auto max-w-360 space-y-6">
       <div>
-        <p className="text-sm font-medium text-primary">Rencana masa depan</p>
-        <h1 className="mt-1 text-2xl font-semibold text-foreground">Target tabungan</h1>
-        <p className="mt-1.5 text-sm text-muted">Buat tujuan, pantau progres, dan catat setoranmu.</p>
+        <span className="text-xs font-semibold uppercase tracking-wider text-primary">
+          Rencana Masa Depan
+        </span>
+        <h1 className="mt-1 text-2xl sm:text-3xl font-bold tracking-tight text-foreground">
+          Target Tabungan
+        </h1>
+        <p className="mt-1 text-xs sm:text-sm text-muted">
+          Buat tujuan, pantau progres, dan catat setoran tabunganmu.
+        </p>
       </div>
       <SavingsGoalsManager goals={goals} />
     </div>

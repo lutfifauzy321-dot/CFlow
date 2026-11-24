@@ -6,18 +6,17 @@ import { useRouter } from "next/navigation";
 import {
   ChevronLeft,
   ChevronRight,
-  Eye,
   Pencil,
   Plus,
   Search,
   Trash2,
   X,
-  FileImage,
 } from "lucide-react";
 import { deleteTransactionAction } from "@/actions/transaction";
 import { AddTransactionModal } from "@/components/transaksi/AddTransactionModal";
+import { useCurrency } from "@/components/providers/CurrencyProvider";
+import { useNotification } from "@/components/providers/NotificationProvider";
 import { TransactionBadge } from "@/components/transaksi/TransactionBadge";
-import { formatRupiah } from "@/lib/utils/format";
 import type { Category, Transaction, TransactionType } from "@/types";
 
 type TransactionFilters = {
@@ -62,6 +61,8 @@ export function TransactionTable({
   filters,
 }: TransactionTableProps) {
   const router = useRouter();
+  const { formatMoney } = useCurrency();
+  const { confirm, toast } = useNotification();
   const [modalOpen, setModalOpen] = useState(false);
   const [editingTransaction, setEditingTransaction] = useState<Transaction | null>(null);
   const [deletingId, setDeletingId] = useState<string>();
@@ -87,17 +88,25 @@ export function TransactionTable({
     setModalOpen(true);
   }
 
-  function removeTransaction(transaction: Transaction) {
-    if (!window.confirm(`Hapus transaksi "${transaction.keterangan}"?`)) return;
+  async function removeTransaction(transaction: Transaction) {
+    const ok = await confirm({
+      title: "Hapus Transaksi",
+      message: `Apakah Anda yakin ingin menghapus transaksi "${transaction.keterangan}"? Data yang dihapus tidak dapat dikembalikan.`,
+      confirmLabel: "Ya, Hapus",
+    });
+    if (!ok) return;
     setDeleteError(undefined);
     setDeletingId(transaction.id);
     startTransition(async () => {
       const result = await deleteTransactionAction(transaction.id);
       setDeletingId(undefined);
       if (result.success) {
+        toast.success(`Transaksi "${transaction.keterangan}" berhasil dihapus.`);
         router.refresh();
       } else {
-        setDeleteError(result.error ?? "Transaksi gagal dihapus.");
+        const msg = result.error ?? "Transaksi gagal dihapus.";
+        setDeleteError(msg);
+        toast.error(msg);
       }
     });
   }
@@ -237,11 +246,16 @@ export function TransactionTable({
                             keterangan: transaction.keterangan,
                           })
                         }
-                        className="inline-flex items-center gap-1.5 rounded-lg border border-border bg-surface px-2.5 py-1 text-xs font-medium text-foreground hover:border-primary hover:text-primary transition shadow-2xs"
-                        title="Lihat foto bukti transaksi"
+                        className="group/img relative inline-flex items-center gap-2 rounded-xl border border-border bg-surface p-1 pr-2.5 text-xs font-medium text-foreground hover:border-primary hover:text-primary transition shadow-2xs"
+                        title="Klik untuk memperbesar foto bukti transaksi"
                       >
-                        <FileImage size={13} className="text-primary" />
-                        <span>Bukti</span>
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img
+                          src={transaction.bukti_url}
+                          alt={`Bukti ${transaction.keterangan}`}
+                          className="size-8 rounded-lg object-cover border border-border/60"
+                        />
+                        <span className="hidden sm:inline">Lihat</span>
                       </button>
                     ) : (
                       <span className="text-xs text-muted/60">-</span>
@@ -253,7 +267,7 @@ export function TransactionTable({
                     }`}
                   >
                     {transaction.tipe === "masuk" ? "+ " : "- "}
-                    {formatRupiah(transaction.nominal)}
+                    {formatMoney(transaction.nominal)}
                   </td>
                   <td className="px-5 py-4">
                     <div className="flex justify-end gap-1">
@@ -315,7 +329,7 @@ export function TransactionTable({
             <div className="flex items-center gap-2">
               <Link
                 href={pageHref(filters, page - 1)}
-                prefetch={true}
+                prefetch={false}
                 aria-disabled={page <= 1}
                 tabIndex={page <= 1 ? -1 : undefined}
                 className={`grid size-8.5 place-items-center rounded-lg border border-border transition ${
@@ -331,7 +345,7 @@ export function TransactionTable({
               </span>
               <Link
                 href={pageHref(filters, page + 1)}
-                prefetch={true}
+                prefetch={false}
                 aria-disabled={page >= totalPages}
                 tabIndex={page >= totalPages ? -1 : undefined}
                 className={`grid size-8.5 place-items-center rounded-lg border border-border transition ${
@@ -353,7 +367,15 @@ export function TransactionTable({
           categories={categories}
           transaction={editingTransaction}
           onClose={closeModal}
-          onSaved={closeModal}
+          onSaved={() => {
+            const wasEditing = Boolean(editingTransaction);
+            closeModal();
+            toast.success(
+              wasEditing
+                ? "Perubahan transaksi berhasil disimpan."
+                : "Transaksi baru berhasil ditambahkan.",
+            );
+          }}
         />
       )}
 

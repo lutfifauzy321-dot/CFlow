@@ -3,7 +3,8 @@
 import { useState, useTransition, useRef } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { ImagePlus, Trash2, Eye } from "lucide-react";
+import { ImagePlus, Trash2 } from "lucide-react";
+import { DatePicker } from "@/components/ui/DatePicker";
 import type { Category, Transaction } from "@/types";
 import {
   transactionSchema,
@@ -185,19 +186,18 @@ export function TransactionForm({
       </div>
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-        <label className="block text-sm font-medium text-foreground-soft">
-          Tanggal
-          <input
-            {...form.register("tanggal")}
-            type="date"
-            className={fieldClassName}
+        <div className="block text-sm font-medium text-foreground-soft">
+          <span>Tanggal</span>
+          <DatePicker
+            value={form.watch("tanggal")}
+            onChange={(val) => form.setValue("tanggal", val, { shouldValidate: true })}
           />
           {form.formState.errors.tanggal && (
             <span className="mt-1 block text-xs text-danger">
               {form.formState.errors.tanggal.message}
             </span>
           )}
-        </label>
+        </div>
         <label className="block text-sm font-medium text-foreground-soft">
           Nominal (Rp)
           <input

@@ -1,13 +1,15 @@
+"use client";
+
+import { useState } from "react";
 import {
   Car,
-  ChevronDown,
   ShoppingBag,
   Trophy,
   Utensils,
   Wallet,
   Zap,
 } from "lucide-react";
-import { formatRupiah } from "@/lib/utils/format";
+import { Money } from "@/components/ui/Money";
 import type { CategorySpending } from "@/services/dashboard.service";
 
 const itemThemes = [
@@ -41,14 +43,24 @@ const itemThemes = [
 export function TopCategories({
   categories,
   total,
+  incomeCategories = [],
+  incomeTotal = 0,
   bulanLabel,
 }: {
   categories: CategorySpending[];
   total?: number;
+  incomeCategories?: CategorySpending[];
+  incomeTotal?: number;
   bulanLabel?: string;
 }) {
-  const maxAmount = categories[0]?.nominal ?? 1;
-  const overallTotal = total && total > 0 ? total : categories.reduce((acc, c) => acc + c.nominal, 0);
+  const [selectedType, setSelectedType] = useState<"keluar" | "masuk">("keluar");
+  const activeCategories = selectedType === "keluar" ? categories : incomeCategories;
+  const activeTotalProp = selectedType === "keluar" ? total : incomeTotal;
+  const maxAmount = activeCategories[0]?.nominal ?? 1;
+  const overallTotal =
+    activeTotalProp && activeTotalProp > 0
+      ? activeTotalProp
+      : activeCategories.reduce((acc, c) => acc + c.nominal, 0);
 
   return (
     <section
@@ -56,7 +68,7 @@ export function TopCategories({
       aria-label="Kategori teratas"
     >
       {/* Header matching screenshot */}
-      <div className="flex items-start justify-between gap-3">
+      <div className="flex flex-wrap items-start justify-between gap-3">
         <div className="flex items-start gap-3">
           <span className="grid size-10 shrink-0 place-items-center rounded-2xl bg-purple-100 text-[#5b3fc8] dark:bg-purple-950/60 dark:text-purple-300 shadow-xs">
             <Trophy size={20} strokeWidth={2.2} />
@@ -66,29 +78,52 @@ export function TopCategories({
               Kategori Teratas
             </h2>
             <p className="text-xs text-muted">
-              Kategori dengan pengeluaran terbesar
+              {selectedType === "keluar"
+                ? "Kategori dengan pengeluaran terbesar"
+                : "Kategori dengan pemasukan terbesar"}
+              {bulanLabel ? ` (${bulanLabel})` : ""}
             </p>
           </div>
         </div>
 
-        {/* Month Pill Badge */}
-        {bulanLabel && (
-          <div className="hidden sm:flex items-center gap-1.5 rounded-full border border-border/80 bg-surface-alt px-3 py-1 text-xs font-medium text-foreground-soft">
-            <span>{bulanLabel}</span>
-            <ChevronDown size={14} className="text-muted" />
-          </div>
-        )}
+        {/* Toggle Pengeluaran / Pemasukan */}
+        <div className="flex items-center rounded-full bg-surface-alt p-1 border border-border/60">
+          <button
+            type="button"
+            onClick={() => setSelectedType("keluar")}
+            className={`rounded-full px-3 py-1 text-xs font-semibold transition-all ${
+              selectedType === "keluar"
+                ? "bg-rose-500 text-white shadow-xs"
+                : "text-muted hover:text-foreground"
+            }`}
+          >
+            Pengeluaran
+          </button>
+          <button
+            type="button"
+            onClick={() => setSelectedType("masuk")}
+            className={`rounded-full px-3 py-1 text-xs font-semibold transition-all ${
+              selectedType === "masuk"
+                ? "bg-emerald-600 text-white shadow-xs"
+                : "text-muted hover:text-foreground"
+            }`}
+          >
+            Pemasukan
+          </button>
+        </div>
       </div>
 
-      {categories.length === 0 ? (
+      {activeCategories.length === 0 ? (
         <div className="grid min-h-60 place-items-center text-center">
           <p className="max-w-60 text-xs sm:text-sm leading-6 text-muted">
-            Kategori akan muncul setelah transaksi keluar dicatat.
+            {selectedType === "keluar"
+              ? "Kategori akan muncul setelah transaksi keluar dicatat."
+              : "Kategori akan muncul setelah transaksi masuk dicatat."}
           </p>
         </div>
       ) : (
         <ul className="mt-5 space-y-4">
-          {categories.slice(0, 5).map((category, index) => {
+          {activeCategories.slice(0, 5).map((category, index) => {
             const theme = itemThemes[index % itemThemes.length];
             const Icon = theme.icon;
             const percentage = overallTotal > 0 ? Math.round((category.nominal / overallTotal) * 100) : 0;
@@ -120,7 +155,7 @@ export function TopCategories({
                 {/* Nominal & Percentage Badge */}
                 <div className="flex shrink-0 items-center gap-3 text-right">
                   <span className="text-xs sm:text-sm font-semibold tabular-nums text-foreground">
-                    {formatRupiah(category.nominal)}
+                    <Money amount={category.nominal} />
                   </span>
                   <span className="min-w-8 text-right text-xs font-bold text-muted tabular-nums">
                     {percentage}%

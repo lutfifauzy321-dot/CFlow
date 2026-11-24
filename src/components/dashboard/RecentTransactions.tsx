@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { TransactionBadge } from "@/components/transaksi/TransactionBadge";
-import { formatRupiah } from "@/lib/utils/format";
+import { Money } from "@/components/ui/Money";
 import type { Transaction } from "@/types";
 
 type RecentTransaction = Transaction & { nama_kategori: string };
@@ -28,7 +28,6 @@ export function RecentTransactions({
         </div>
         <Link
           href="/transaksi"
-          prefetch={true}
           className="inline-flex shrink-0 items-center gap-1.5 text-sm font-semibold text-primary hover:text-primary-hover"
         >
           Lihat semua <ArrowRight size={16} />
@@ -59,6 +58,14 @@ export function RecentTransactions({
                       <span className="max-w-52.5 truncate text-sm font-medium text-foreground-soft">
                         {transaction.keterangan}
                       </span>
+                      {transaction.bukti_url && (
+                        /* eslint-disable-next-line @next/next/no-img-element */
+                        <img
+                          src={transaction.bukti_url}
+                          alt={`Bukti ${transaction.keterangan}`}
+                          className="size-7 shrink-0 rounded-md object-cover border border-border shadow-2xs"
+                        />
+                      )}
                     </div>
                   </td>
                   <td className="px-5 py-3.5 text-sm text-muted">
@@ -75,7 +82,7 @@ export function RecentTransactions({
                     }`}
                   >
                     {transaction.tipe === "masuk" ? "+" : "-"}
-                    {formatRupiah(transaction.nominal)}
+                    <Money amount={transaction.nominal} />
                   </td>
                 </tr>
               ))}

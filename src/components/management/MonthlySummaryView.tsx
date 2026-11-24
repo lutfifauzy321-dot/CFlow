@@ -19,7 +19,7 @@ import {
   Wallet,
   X,
 } from "lucide-react";
-import { formatRupiah } from "@/lib/utils/format";
+import { useCurrency } from "@/components/providers/CurrencyProvider";
 import type { Category, Transaction } from "@/types";
 import { TransactionBadge } from "@/components/transaksi/TransactionBadge";
 
@@ -42,7 +42,9 @@ export function MonthlySummaryView({
   transactions,
   categories,
 }: MonthlySummaryViewProps) {
+  const { formatMoney } = useCurrency();
   const [filterType, setFilterType] = useState<"all" | "keluar" | "masuk">("keluar");
+  const [breakdownType, setBreakdownType] = useState<"keluar" | "masuk">("keluar");
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
   const [searchQuery, setSearchQuery] = useState("");
   const [sortBy, setSortBy] = useState<"date_desc" | "date_asc" | "amount_desc" | "amount_asc">("date_desc");
@@ -66,22 +68,24 @@ export function MonthlySummaryView({
   const savingsRate =
     totalPemasukan > 0 ? Math.round((netSavings / totalPemasukan) * 100) : 0;
 
-  // Expense breakdown by category
-  const expenseByCategory = new Map<string, { category: Category; nominal: number; count: number }>();
-  for (const t of expenseTransactions) {
+  // Breakdown by category (pengeluaran or pemasukan)
+  const activeBreakdownSource = breakdownType === "keluar" ? expenseTransactions : incomeTransactions;
+  const activeBreakdownTotal = breakdownType === "keluar" ? totalPengeluaran : totalPemasukan;
+  const categoryBreakdownMap = new Map<string, { category: Category; nominal: number; count: number }>();
+  for (const t of activeBreakdownSource) {
     const cat = categoryMap.get(t.category_id) ?? {
       id: t.category_id,
       nama: "Lainnya",
-      tipe: "keluar" as const,
+      tipe: breakdownType,
       ikon: "tag",
       warna: "#64748b",
     };
-    const current = expenseByCategory.get(cat.id) ?? { category: cat, nominal: 0, count: 0 };
+    const current = categoryBreakdownMap.get(cat.id) ?? { category: cat, nominal: 0, count: 0 };
     current.nominal += t.nominal;
     current.count += 1;
-    expenseByCategory.set(cat.id, current);
+    categoryBreakdownMap.set(cat.id, current);
   }
-  const expenseBreakdown = Array.from(expenseByCategory.values()).sort(
+  const categoryBreakdown = Array.from(categoryBreakdownMap.values()).sort(
     (a, b) => b.nominal - a.nominal,
   );
 
@@ -123,7 +127,7 @@ export function MonthlySummaryView({
             Ringkasan Keuangan Bulanan
           </span>
           <h1 className="mt-1 text-2xl sm:text-3xl font-bold tracking-tight text-foreground">
-            Rincian Arus Kas {bulanLabel}
+            Rincian Arus Uang {bulanLabel}
           </h1>
           <p className="mt-1 text-xs sm:text-sm text-muted">
             Tinjauan lengkap seluruh pemasukan dan pengeluaran pada bulan terpilih.
@@ -160,7 +164,7 @@ export function MonthlySummaryView({
             <p className="text-xs font-medium text-muted">Total Pemasukan</p>
           </div>
           <p className="mt-4 text-xl sm:text-2xl font-bold tracking-tight text-emerald-600 dark:text-emerald-400 tabular-nums">
-            {formatRupiah(totalPemasukan)}
+            {formatMoney(totalPemasukan)}
           </p>
           <p className="mt-1 text-[11px] text-muted">
             {incomeTransactions.length} kali pemasukan tercatat
@@ -176,27 +180,27 @@ export function MonthlySummaryView({
             <p className="text-xs font-medium text-muted">Total Pengeluaran</p>
           </div>
           <p className="mt-4 text-xl sm:text-2xl font-bold tracking-tight text-rose-500 dark:text-rose-400 tabular-nums">
-            {formatRupiah(totalPengeluaran)}
+            {formatMoney(totalPengeluaran)}
           </p>
           <p className="mt-1 text-[11px] text-muted">
             {expenseTransactions.length} kali pengeluaran tercatat
           </p>
         </div>
 
-        {/* Arus Kas Bersih (Sisa Saldo Bulan Ini) */}
+        {/* Arus Uang Bersih (Sisa Saldo Bulan Ini) */}
         <div className="rounded-3xl border border-border/80 bg-surface p-5 shadow-xs transition hover:shadow-md">
           <div className="flex items-center gap-3">
-            <span className="grid size-10 place-items-center rounded-2xl bg-violet-50 text-violet-600 dark:bg-purple-950/60 dark:text-purple-300 border border-violet-100 dark:border-purple-900/50">
+            <span className="grid size-10 place-items-center rounded-2xl bg-violet-50 text-violet-600 border border-violet-100">
               <Wallet size={19} strokeWidth={2.2} />
             </span>
-            <p className="text-xs font-medium text-muted">Sisa Arus Kas Bulan Ini</p>
+            <p className="text-xs font-medium text-muted">Sisa Arus Uang Bulan Ini</p>
           </div>
           <p
             className={`mt-4 text-xl sm:text-2xl font-bold tracking-tight tabular-nums ${
               netSavings >= 0 ? "text-foreground" : "text-danger"
             }`}
           >
-            {formatRupiah(netSavings)}
+            {formatMoney(netSavings)}
           </p>
           <p className="mt-1 text-[11px] text-muted">
             {netSavings >= 0 ? "Surplus / Sisa tabungan" : "Defisit pengeluaran"}
@@ -212,7 +216,7 @@ export function MonthlySummaryView({
             <p className="text-xs font-medium text-muted">Pengeluaran Terbesar</p>
           </div>
           <p className="mt-4 text-lg sm:text-xl font-bold tracking-tight text-foreground truncate">
-            {biggestExpense ? formatRupiah(biggestExpense.nominal) : "Rp 0"}
+            {biggestExpense ? formatMoney(biggestExpense.nominal) : "Rp 0"}
           </p>
           <p className="mt-1 text-[11px] text-muted truncate">
             {biggestExpense ? biggestExpense.keterangan : "Belum ada transaksi"}
@@ -222,33 +226,60 @@ export function MonthlySummaryView({
 
       {/* Category Breakdown & Progress */}
       <div className="rounded-3xl border border-border/80 bg-surface p-5 sm:p-6 shadow-xs">
-        <div className="flex items-center justify-between gap-4 border-b border-border-soft pb-4">
+        <div className="flex flex-wrap items-center justify-between gap-4 border-b border-border-soft pb-4">
           <div className="flex items-center gap-3">
             <span className="grid size-9 place-items-center rounded-xl bg-primary-soft text-primary">
               <PieIcon size={18} strokeWidth={2.2} />
             </span>
             <div>
               <h2 className="text-base sm:text-lg font-bold text-foreground">
-                Distribusi Kategori Pengeluaran
+                {breakdownType === "keluar"
+                  ? "Distribusi Kategori Pengeluaran"
+                  : "Distribusi Kategori Pemasukan"}
               </h2>
               <p className="text-xs text-muted">
-                Persentase dan total pemakaian per pos keuangan
+                Persentase dan total pemakaian per pos keuangan ({categoryBreakdown.length} Pos Aktif)
               </p>
             </div>
           </div>
-          <span className="text-xs font-semibold text-primary">
-            {expenseBreakdown.length} Pos Aktif
-          </span>
+
+          <div className="flex items-center rounded-full bg-surface-alt p-1 border border-border/60">
+            <button
+              type="button"
+              onClick={() => setBreakdownType("keluar")}
+              className={`rounded-full px-3 py-1 text-xs font-semibold transition-all ${
+                breakdownType === "keluar"
+                  ? "bg-rose-500 text-white shadow-xs"
+                  : "text-muted hover:text-foreground"
+              }`}
+            >
+              Pengeluaran
+            </button>
+            <button
+              type="button"
+              onClick={() => setBreakdownType("masuk")}
+              className={`rounded-full px-3 py-1 text-xs font-semibold transition-all ${
+                breakdownType === "masuk"
+                  ? "bg-emerald-600 text-white shadow-xs"
+                  : "text-muted hover:text-foreground"
+              }`}
+            >
+              Pemasukan
+            </button>
+          </div>
         </div>
 
-        {expenseBreakdown.length === 0 ? (
+        {categoryBreakdown.length === 0 ? (
           <p className="py-8 text-center text-xs text-muted">
-            Belum ada data pengeluaran pada bulan {bulanLabel}.
+            {breakdownType === "keluar"
+              ? `Belum ada data pengeluaran pada bulan ${bulanLabel}.`
+              : `Belum ada data pemasukan pada bulan ${bulanLabel}.`}
           </p>
         ) : (
           <div className="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {expenseBreakdown.map((item) => {
-              const percentage = totalPengeluaran > 0 ? Math.round((item.nominal / totalPengeluaran) * 100) : 0;
+            {categoryBreakdown.map((item) => {
+              const percentage =
+                activeBreakdownTotal > 0 ? Math.round((item.nominal / activeBreakdownTotal) * 100) : 0;
               return (
                 <div
                   key={item.category.id}
@@ -271,7 +302,7 @@ export function MonthlySummaryView({
                   <div className="flex items-center justify-between text-[11px] text-muted">
                     <span>{item.count} transaksi</span>
                     <span className="font-semibold text-foreground-soft tabular-nums">
-                      {formatRupiah(item.nominal)}
+                      {formatMoney(item.nominal)}
                     </span>
                   </div>
                 </div>
@@ -289,7 +320,7 @@ export function MonthlySummaryView({
               Rincian Transaksi Lengkap
             </h2>
             <p className="text-xs text-muted">
-              Semua catatan arus kas untuk bulan {bulanLabel}
+              Semua catatan arus uang untuk bulan {bulanLabel}
             </p>
           </div>
 
@@ -349,7 +380,7 @@ export function MonthlySummaryView({
             {/* Sort by */}
             <select
               value={sortBy}
-              onChange={(e) => setSortBy(e.target.value as any)}
+              onChange={(e) => setSortBy(e.target.value as "date_desc" | "date_asc" | "amount_desc" | "amount_asc")}
               className="h-9 rounded-xl border border-border bg-surface px-3 text-xs text-foreground outline-none focus:border-primary"
             >
               <option value="date_desc">Tanggal: Terbaru</option>
@@ -431,7 +462,7 @@ export function MonthlySummaryView({
                     }`}
                   >
                     {t.tipe === "masuk" ? "+ " : "- "}
-                    {formatRupiah(t.nominal)}
+                    {formatMoney(t.nominal)}
                   </td>
                 </tr>
               ))}

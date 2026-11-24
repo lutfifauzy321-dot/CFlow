@@ -95,7 +95,7 @@ export async function getCashFlowHistory(userId: string, bulan: string) {
 		.gte("tanggal", startDate)
 		.lt("tanggal", endDate);
 
-	if (error) throw new Error("Riwayat arus kas gagal dimuat.");
+	if (error) throw new Error("Riwayat arus uang gagal dimuat.");
 
 	const totalsByDate = new Map<string, CashFlowPoint>();
 	for (const transaction of data ?? []) {
@@ -129,13 +129,25 @@ export async function getCashFlowHistory(userId: string, bulan: string) {
 
 export async function getRecentTransactions(userId: string) {
 	const supabase = await createClient();
-	const { data, error } = await supabase
+	let { data, error } = await supabase
 		.from("transactions")
-		.select("id, category_id, tanggal, keterangan, tipe, nominal")
+		.select("id, category_id, tanggal, keterangan, tipe, nominal, bukti_url")
 		.eq("user_id", userId)
 		.order("tanggal", { ascending: false })
 		.order("created_at", { ascending: false })
 		.limit(5);
+
+	if (error && String(error.message).includes("bukti_url")) {
+		const fallback = await supabase
+			.from("transactions")
+			.select("id, category_id, tanggal, keterangan, tipe, nominal")
+			.eq("user_id", userId)
+			.order("tanggal", { ascending: false })
+			.order("created_at", { ascending: false })
+			.limit(5);
+		data = fallback.data as typeof data;
+		error = fallback.error;
+	}
 
 	if (error) throw new Error("Transaksi terbaru gagal dimuat.");
 
@@ -145,10 +157,11 @@ export async function getRecentTransactions(userId: string) {
 export function getCategorySpending(
 	categories: Category[],
 	transactions: DashboardMonthTransaction[],
+	tipe: TransactionType = "keluar",
 ): CategorySpending[] {
 	const totals = new Map<string, number>();
 	for (const transaction of transactions) {
-		if (transaction.tipe !== ("keluar" satisfies TransactionType)) continue;
+		if (transaction.tipe !== tipe) continue;
 		totals.set(
 			transaction.category_id,
 			(totals.get(transaction.category_id) ?? 0) + transaction.nominal,

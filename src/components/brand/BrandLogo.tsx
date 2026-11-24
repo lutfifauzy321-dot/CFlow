@@ -12,24 +12,13 @@ export function BrandLogo({ href = "/dashboard", compact = false }: BrandLogoPro
       prefetch={true}
       className="inline-flex w-fit items-center gap-2.5 text-current group"
     >
-      <span className="relative grid size-9.5 shrink-0 place-items-center rounded-xl bg-white/20 backdrop-blur-xs text-white shadow-inner transition-transform group-hover:scale-105">
-        <svg viewBox="0 0 32 32" className="size-6" fill="none" aria-hidden="true">
-          {/* Circular flowing C path */}
-          <path
-            d="M20 9.5A7.5 7.5 0 1 0 20 22.5"
-            stroke="currentColor"
-            strokeWidth="3.2"
-            strokeLinecap="round"
-          />
-          {/* Dynamic rising arrow */}
-          <path
-            d="M15 17L23 9M18 9H23V14"
-            stroke="currentColor"
-            strokeWidth="2.8"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          />
-        </svg>
+      <span className="relative flex h-10 w-11 shrink-0 items-center justify-center rounded-xl bg-white/18 px-1.5 border border-white/20 shadow-inner transition-transform group-hover:scale-105">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src="/logo.png"
+          alt="Logo CFlow"
+          className="h-6.5 w-auto object-contain drop-shadow-xs"
+        />
       </span>
       {!compact && (
         <span className="text-[21px] font-bold tracking-tight text-white font-sans flex items-center">

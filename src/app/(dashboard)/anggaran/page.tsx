@@ -31,9 +31,13 @@ export default async function AnggaranPage({
   return (
     <div className="mx-auto max-w-360 space-y-6">
       <div>
-        <p className="text-sm font-medium text-primary">Rencana pengeluaran</p>
-        <h1 className="mt-1 text-2xl font-semibold text-foreground">Anggaran</h1>
-        <p className="mt-1.5 text-sm text-muted">
+        <span className="text-xs font-semibold uppercase tracking-wider text-primary">
+          Rencana Pengeluaran
+        </span>
+        <h1 className="mt-1 text-2xl sm:text-3xl font-bold tracking-tight text-foreground">
+          Anggaran
+        </h1>
+        <p className="mt-1 text-xs sm:text-sm text-muted">
           Tetapkan batas per kategori dan pantau pemakaian bulan ini.
         </p>
       </div>

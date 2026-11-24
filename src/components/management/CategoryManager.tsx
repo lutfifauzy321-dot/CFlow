@@ -3,6 +3,7 @@
 import { useEffect, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { useTheme } from "next-themes";
+import { useNotification } from "@/components/providers/NotificationProvider";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import {
@@ -216,6 +217,7 @@ function CategoryForm({
 
 export function CategoryManager({ categories }: { categories: Category[] }) {
   const router = useRouter();
+  const { confirm, toast } = useNotification();
   const [editing, setEditing] = useState<Category | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
   const [feedback, setFeedback] = useState<string>();
@@ -244,19 +246,30 @@ export function CategoryManager({ categories }: { categories: Category[] }) {
     setModalOpen(true);
   }
 
-  function remove(category: Category) {
-    if (!window.confirm(`Hapus kategori "${category.nama}"?`)) return;
+  async function remove(category: Category) {
+    const ok = await confirm({
+      title: "Hapus Kategori",
+      message: `Apakah Anda yakin ingin menghapus kategori "${category.nama}"? Kategori yang sudah memiliki transaksi tidak dapat dihapus.`,
+      confirmLabel: "Ya, Hapus",
+    });
+    if (!ok) return;
     setFeedback(undefined);
     startTransition(async () => {
       const result = await deleteCategoryAction(category.id);
-      setFeedback(result.success ? "Kategori dihapus." : result.error ?? "Kategori gagal dihapus.");
-      if (result.success) router.refresh();
+      if (result.success) {
+        toast.success(`Kategori "${category.nama}" berhasil dihapus.`);
+        router.refresh();
+      } else {
+        const msg = result.error ?? "Kategori gagal dihapus.";
+        setFeedback(msg);
+        toast.error(msg);
+      }
     });
   }
 
   function renderGroup(title: string, items: Category[]) {
     return (
-      <section className="overflow-hidden rounded-xl border border-border bg-surface">
+      <section className="overflow-hidden rounded-3xl border border-border/80 bg-surface shadow-xs">
         <div className="flex items-center justify-between border-b border-border-soft px-4 py-3.5 sm:px-5">
           <h2 className="text-sm font-semibold text-foreground-soft">{title}</h2>
           <span className="text-xs tabular-nums text-muted">{items.length}</span>
@@ -304,7 +317,7 @@ export function CategoryManager({ categories }: { categories: Category[] }) {
       </div>
       {modalOpen && (
         <div className="fixed inset-0 z-60 flex items-end justify-center bg-foreground/50 sm:items-center sm:p-5">
-          <section role="dialog" aria-modal="true" aria-labelledby="category-modal-title" className="max-h-[92vh] w-full max-w-140 overflow-y-auto rounded-t-xl border border-border bg-surface p-5 shadow-xl sm:rounded-xl sm:p-6">
+          <section role="dialog" aria-modal="true" aria-labelledby="category-modal-title" className="max-h-[92vh] w-full max-w-140 overflow-y-auto rounded-t-3xl border border-border bg-white/95 dark:bg-[#161032]/95 p-5 shadow-2xl sm:rounded-3xl sm:p-6">
             <div className="mb-5 flex items-start justify-between">
               <div className="flex items-start gap-3">
                 <span className="grid size-10 place-items-center rounded-lg bg-primary-soft text-primary-strong"><Tags size={18} /></span>
@@ -315,7 +328,17 @@ export function CategoryManager({ categories }: { categories: Category[] }) {
               </div>
               <button type="button" aria-label="Tutup" onClick={() => setModalOpen(false)} className="grid size-11 place-items-center rounded-lg text-muted hover:bg-surface-alt"><X size={18} /></button>
             </div>
-            <CategoryForm category={editing} onCancel={() => setModalOpen(false)} onSaved={() => { setModalOpen(false); router.refresh(); }} />
+            <CategoryForm
+              category={editing}
+              onCancel={() => setModalOpen(false)}
+              onSaved={() => {
+                setModalOpen(false);
+                toast.success(
+                  editing ? "Kategori berhasil diperbarui." : "Kategori baru berhasil ditambahkan.",
+                );
+                router.refresh();
+              }}
+            />
           </section>
         </div>
       )}

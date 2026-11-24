@@ -61,6 +61,12 @@ export async function saveTransactionAction(
 				.maybeSingle();
 
 			if (error && String(error.message).includes("bukti_url")) {
+				if (payload.bukti_url) {
+					return {
+						success: false,
+						error: "Kolom bukti_url belum ada di database. Jalankan migrasi 002_add_bukti_url.sql di Supabase.",
+					};
+				}
 				const { bukti_url, ...fallbackPayload } = payload;
 				const retry = await supabase
 					.from("transactions")
@@ -79,6 +85,12 @@ export async function saveTransactionAction(
 		} else {
 			let { error } = await supabase.from("transactions").insert(payload);
 			if (error && String(error.message).includes("bukti_url")) {
+				if (payload.bukti_url) {
+					return {
+						success: false,
+						error: "Kolom bukti_url belum ada di database. Jalankan migrasi 002_add_bukti_url.sql di Supabase.",
+					};
+				}
 				const { bukti_url, ...fallbackPayload } = payload;
 				const retry = await supabase.from("transactions").insert(fallbackPayload);
 				error = retry.error;
