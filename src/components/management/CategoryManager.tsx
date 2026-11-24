@@ -303,11 +303,17 @@ export function CategoryManager({ categories }: { categories: Category[] }) {
   }
 
   return (
-    <div className="space-y-4">
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <p className="text-sm text-muted">Atur nama, jenis, ikon, dan warna kategori.</p>
-        <button type="button" onClick={openCreate} className="flex h-11 items-center gap-2 rounded-lg bg-primary px-4 text-sm font-semibold text-on-primary hover:bg-primary-hover">
-          <Plus size={17} /> Tambah kategori
+    <div className="space-y-5">
+      <div className="flex flex-wrap items-center justify-between gap-3 rounded-3xl border border-border/80 bg-surface px-5 py-3.5 shadow-xs">
+        <p className="text-xs sm:text-sm text-muted">
+          Kelompokkan pemasukan dan pengeluaranmu dengan ikon serta warna khusus.
+        </p>
+        <button
+          type="button"
+          onClick={openCreate}
+          className="flex h-10.5 items-center gap-2 rounded-xl bg-primary px-4 text-xs sm:text-sm font-semibold text-on-primary shadow-sm transition hover:bg-primary-hover active:scale-95"
+        >
+          <Plus size={16} strokeWidth={2.4} /> Tambah Kategori
         </button>
       </div>
       {feedback && <p role="status" className={`rounded-lg px-4 py-3 text-sm ${feedback === "Kategori dihapus." ? "bg-success-soft text-success" : "bg-danger-soft text-danger"}`}>{feedback}</p>}

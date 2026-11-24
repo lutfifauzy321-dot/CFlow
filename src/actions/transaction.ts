@@ -67,7 +67,14 @@ export async function saveTransactionAction(
 						error: "Kolom bukti_url belum ada di database. Jalankan migrasi 002_add_bukti_url.sql di Supabase.",
 					};
 				}
-				const { bukti_url, ...fallbackPayload } = payload;
+				const fallbackPayload = {
+					category_id: payload.category_id,
+					keterangan: payload.keterangan,
+					nominal: payload.nominal,
+					tanggal: payload.tanggal,
+					tipe: payload.tipe,
+					user_id: payload.user_id,
+				};
 				const retry = await supabase
 					.from("transactions")
 					.update(fallbackPayload)
@@ -91,7 +98,14 @@ export async function saveTransactionAction(
 						error: "Kolom bukti_url belum ada di database. Jalankan migrasi 002_add_bukti_url.sql di Supabase.",
 					};
 				}
-				const { bukti_url, ...fallbackPayload } = payload;
+				const fallbackPayload = {
+					category_id: payload.category_id,
+					keterangan: payload.keterangan,
+					nominal: payload.nominal,
+					tanggal: payload.tanggal,
+					tipe: payload.tipe,
+					user_id: payload.user_id,
+				};
 				const retry = await supabase.from("transactions").insert(fallbackPayload);
 				error = retry.error;
 			}

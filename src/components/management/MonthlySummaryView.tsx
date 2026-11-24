@@ -4,18 +4,13 @@ import { useState } from "react";
 import Link from "next/link";
 import {
   ArrowDown,
-  ArrowDownLeft,
   ArrowUpRight,
-  ChevronDown,
   Download,
-  Eye,
   FileImage,
-  Filter,
   PieChart as PieIcon,
   Plus,
   Receipt,
   Search,
-  SlidersHorizontal,
   Wallet,
   X,
 } from "lucide-react";
@@ -65,8 +60,6 @@ export function MonthlySummaryView({
   const totalPemasukan = incomeTransactions.reduce((acc, t) => acc + t.nominal, 0);
   const totalPengeluaran = expenseTransactions.reduce((acc, t) => acc + t.nominal, 0);
   const netSavings = totalPemasukan - totalPengeluaran;
-  const savingsRate =
-    totalPemasukan > 0 ? Math.round((netSavings / totalPemasukan) * 100) : 0;
 
   // Breakdown by category (pengeluaran or pemasukan)
   const activeBreakdownSource = breakdownType === "keluar" ? expenseTransactions : incomeTransactions;
@@ -190,7 +183,7 @@ export function MonthlySummaryView({
         {/* Arus Uang Bersih (Sisa Saldo Bulan Ini) */}
         <div className="rounded-3xl border border-border/80 bg-surface p-5 shadow-xs transition hover:shadow-md">
           <div className="flex items-center gap-3">
-            <span className="grid size-10 place-items-center rounded-2xl bg-violet-50 text-violet-600 border border-violet-100">
+            <span className="grid size-10 place-items-center rounded-2xl bg-violet-50 text-violet-600 border border-violet-100 dark:bg-purple-950/60 dark:text-purple-300 dark:border-purple-800/40">
               <Wallet size={19} strokeWidth={2.2} />
             </span>
             <p className="text-xs font-medium text-muted">Sisa Arus Uang Bulan Ini</p>

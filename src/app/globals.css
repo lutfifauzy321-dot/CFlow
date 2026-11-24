@@ -232,3 +232,14 @@ input[type="search"]::-webkit-search-results-decoration {
   appearance: none;
   display: none;
 }
+
+/* Ensure <select> dropdown options have solid comfortable contrast in Light & Dark mode */
+select option {
+  background-color: #ffffff;
+  color: #140d33;
+}
+
+.dark select option {
+  background-color: #191038;
+  color: #f8fafc;
+}

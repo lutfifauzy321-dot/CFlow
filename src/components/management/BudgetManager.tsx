@@ -87,7 +87,7 @@ export function BudgetManager({
 
         <div className="rounded-3xl border border-border/80 bg-surface p-5 shadow-xs">
           <div className="flex items-center gap-3">
-            <span className="grid size-10 place-items-center rounded-2xl bg-rose-50 text-rose-500 border border-rose-100">
+            <span className="grid size-10 place-items-center rounded-2xl bg-rose-50 text-rose-500 border border-rose-100 dark:bg-rose-950/60 dark:text-rose-300 dark:border-rose-800/40">
               <Wallet size={19} strokeWidth={2.2} />
             </span>
             <p className="text-xs font-medium text-muted">Total Pengeluaran</p>
@@ -102,8 +102,8 @@ export function BudgetManager({
             <span
               className={`grid size-10 place-items-center rounded-2xl border ${
                 overBudgetCount > 0
-                  ? "bg-rose-50 text-rose-500 border-rose-100"
-                  : "bg-emerald-50 text-emerald-600 border-emerald-100"
+                  ? "bg-rose-50 text-rose-500 border-rose-100 dark:bg-rose-950/60 dark:text-rose-300 dark:border-rose-800/40"
+                  : "bg-emerald-50 text-emerald-600 border-emerald-100 dark:bg-emerald-950/60 dark:text-emerald-300 dark:border-emerald-800/40"
               }`}
             >
               <ShieldAlert size={19} strokeWidth={2.2} />

@@ -190,7 +190,7 @@ function GoalCard({
           <span
             className={`grid size-10 shrink-0 place-items-center rounded-2xl ${
               completed
-                ? "bg-emerald-50 text-emerald-600"
+                ? "bg-emerald-50 text-emerald-600 dark:bg-emerald-950/60 dark:text-emerald-300"
                 : "bg-primary-soft text-primary-strong"
             }`}
           >
@@ -341,7 +341,7 @@ export function SavingsGoalsManager({ goals }: { goals: SavingsGoal[] }) {
 
         <div className="rounded-3xl border border-border/80 bg-surface p-5 shadow-xs">
           <div className="flex items-center gap-3">
-            <span className="grid size-10 place-items-center rounded-2xl bg-emerald-50 text-emerald-600 border border-emerald-100">
+            <span className="grid size-10 place-items-center rounded-2xl bg-emerald-50 text-emerald-600 border border-emerald-100 dark:bg-emerald-950/60 dark:text-emerald-300 dark:border-emerald-800/40">
               <PiggyBank size={19} strokeWidth={2.2} />
             </span>
             <p className="text-xs font-medium text-muted">Total Terkumpul</p>

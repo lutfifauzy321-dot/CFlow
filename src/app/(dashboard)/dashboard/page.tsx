@@ -135,7 +135,7 @@ export default async function DashboardPage({
         <SummaryCard
           title="Sisa Anggaran"
           value={sisaAnggaran}
-          change={15}
+          change={summary.saldo_perubahan_persen}
           tone="budget"
         />
       </section>

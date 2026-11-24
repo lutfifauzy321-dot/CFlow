@@ -8,10 +8,10 @@ export function DashboardGreetingBanner({ userName }: DashboardGreetingBannerPro
   const firstName = userName.split(" ")[0] || "David";
 
   return (
-    <section className="relative overflow-visible pt-2 pb-4 sm:py-5">
-      {/* Background panoramic fluid waves - smoothly masked on the left so there is ZERO hard cutoff */}
+    <section className="relative overflow-hidden rounded-3xl border border-border/80 bg-surface px-6 py-6 sm:px-8 sm:py-7 shadow-xs">
+      {/* Background panoramic fluid waves neatly framed inside the rounded-3xl hero card */}
       <div
-        className="pointer-events-none absolute inset-y-0 right-0 w-full sm:w-[90%] lg:w-[75%] select-none overflow-hidden [mask-image:linear-gradient(to_right,transparent_0%,black_30%)] [-webkit-mask-image:linear-gradient(to_right,transparent_0%,black_30%)]"
+        className="pointer-events-none absolute inset-y-0 right-0 w-full sm:w-[88%] lg:w-[72%] select-none overflow-hidden [mask-image:linear-gradient(to_right,transparent_0%,black_32%)] [-webkit-mask-image:linear-gradient(to_right,transparent_0%,black_32%)]"
         aria-hidden="true"
       >
         <svg

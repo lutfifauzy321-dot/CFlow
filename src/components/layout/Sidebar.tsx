@@ -155,7 +155,7 @@ export function Sidebar({ isOpen, onClose, userCard }: SidebarProps) {
           ))}
 
           {/* Promotional / Feature Callout Card - navigates to Anggaran */}
-          <div className="pt-2">
+          <div className="hidden min-[820px]:block pt-1">
             <Link
               href="/anggaran"
               prefetch={false}

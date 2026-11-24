@@ -88,7 +88,7 @@ export function AuthForm({ mode, nextPath, initialError }: AuthFormProps) {
       </div>
 
       {/* Left Column: Floating Rounded Brand Hero Showcase */}
-      <section className="relative z-10 isolate flex flex-col justify-between overflow-hidden bg-gradient-to-br from-[#5427ba] via-[#3c168f] to-[#210954] dark:from-[#291266] dark:via-[#18093e] dark:to-[#0c0420] px-6 py-6 text-white sm:px-10 lg:m-3.5 lg:rounded-[32px] lg:border lg:border-white/15 lg:px-11 lg:py-8 lg:shadow-2xl">
+      <section className="relative z-10 isolate flex flex-col justify-between overflow-hidden bg-gradient-to-br from-[#5427ba] via-[#3c168f] to-[#210954] dark:from-[#291266] dark:via-[#18093e] dark:to-[#0c0420] px-6 py-5 text-white sm:px-10 lg:m-3.5 lg:rounded-[32px] lg:border lg:border-white/15 lg:px-10 lg:py-6 lg:shadow-2xl">
         {/* Organic Fluid SVG Waves matching Sidebar */}
         <div className="pointer-events-none absolute inset-0 select-none overflow-hidden opacity-85">
           <svg
@@ -139,35 +139,35 @@ export function AuthForm({ mode, nextPath, initialError }: AuthFormProps) {
         </div>
 
         {/* Middle Hero Showcase: Copywriting + Refined Live FX Board */}
-        <div className="relative z-10 my-auto hidden max-w-xl py-4 lg:block">
+        <div className="relative z-10 my-auto hidden max-w-xl py-2 lg:block">
           <div className="inline-flex items-center gap-2 rounded-full bg-white/14 px-3.5 py-1 text-[11px] font-semibold uppercase tracking-wider text-purple-100 border border-white/20">
             <Zap size={13} className="text-amber-300" />
             KELOLA FINANSIAL LEBIH RINGAN
           </div>
 
-          <h1 className="mt-3.5 text-3xl xl:text-[40px] font-extrabold leading-[1.15] tracking-tight text-white font-sans">
+          <h1 className="mt-2.5 text-3xl xl:text-[36px] font-extrabold leading-[1.15] tracking-tight text-white font-sans">
             Kendalikan pengeluaranmu,
             <br />
             amankan akhir bulanmu.
           </h1>
 
-          <p className="mt-3 text-sm xl:text-[15px] leading-relaxed text-purple-200/80 max-w-lg">
+          <p className="mt-2 text-xs xl:text-sm leading-relaxed text-purple-200/85 max-w-lg">
             Tak ada lagi cerita saldo habis tanpa jejak sebelum waktunya. CFlow membantumu melacak setiap transaksi dalam hitungan detik, membatasi pos boros, dan menyisihkan tabungan secara konsisten.
           </p>
 
-          {/* Refined Live Exchange Rates Card (IDR) — aligned cleanly with hero copy */}
-          <div className="mt-6 rounded-2xl bg-white/10 p-4 border border-white/20 shadow-xl">
-            <div className="flex items-center justify-between gap-2 border-b border-white/15 pb-3 mb-3">
-              <div className="flex items-center gap-2.5">
-                <span className="grid size-8 place-items-center rounded-xl bg-white/15 text-purple-100">
-                  <Globe size={15} />
+          {/* Refined Live Exchange Rates Card (IDR) — compact 3-col layout so nothing ever clips */}
+          <div className="mt-4 rounded-2xl bg-white/10 p-3.5 border border-white/20 shadow-xl">
+            <div className="flex items-center justify-between gap-2 border-b border-white/15 pb-2.5 mb-2.5">
+              <div className="flex items-center gap-2">
+                <span className="grid size-7 place-items-center rounded-lg bg-white/15 text-purple-100">
+                  <Globe size={14} />
                 </span>
                 <div>
                   <div className="flex items-center gap-2">
                     <p className="text-xs font-bold text-white leading-none">
                       Kurs Mata Uang Live (IDR)
                     </p>
-                    <span className="inline-flex items-center gap-1 rounded-full bg-emerald-400/20 px-2 py-0.5 text-[10px] font-bold text-emerald-300">
+                    <span className="inline-flex items-center gap-1 rounded-full bg-emerald-400/20 px-1.5 py-0.5 text-[9px] font-bold text-emerald-300">
                       <span
                         className={`size-1.5 rounded-full ${
                           ratesPayload.isLive ? "bg-emerald-400 animate-pulse" : "bg-amber-300"
@@ -176,7 +176,7 @@ export function AuthForm({ mode, nextPath, initialError }: AuthFormProps) {
                       {ratesPayload.isLive ? "LIVE" : "EST"}
                     </span>
                   </div>
-                  <p className="mt-0.5 text-[11px] text-purple-200/70">
+                  <p className="mt-0.5 text-[10px] text-purple-200/70">
                     {ratesPayload.source} · {ratesPayload.date}
                   </p>
                 </div>
@@ -188,15 +188,15 @@ export function AuthForm({ mode, nextPath, initialError }: AuthFormProps) {
                 disabled={isRefreshing}
                 title="Perbarui kurs live"
                 aria-label="Perbarui kurs live"
-                className="inline-flex items-center gap-1.5 rounded-xl bg-white/10 px-2.5 py-1.5 text-[11px] font-semibold text-purple-100 transition hover:bg-white/20 disabled:opacity-50"
+                className="inline-flex items-center gap-1.5 rounded-xl bg-white/10 px-2.5 py-1 text-[11px] font-semibold text-purple-100 transition hover:bg-white/20 disabled:opacity-50"
               >
-                <RefreshCw size={12} className={isRefreshing ? "animate-spin" : ""} />
+                <RefreshCw size={11} className={isRefreshing ? "animate-spin" : ""} />
                 <span>Perbarui</span>
               </button>
             </div>
 
-            {/* Symmetrical Grid: USD featured on top + 2x3 grid for SGD, MYR, EUR, JPY, AUD, GBP */}
-            <div className="grid grid-cols-2 gap-2">
+            {/* Symmetrical Compact Layout: USD banner + 3x2 grid for SGD, MYR, EUR, JPY, AUD, GBP */}
+            <div className="grid grid-cols-3 gap-1.5">
               {FOREIGN_CURRENCIES.map((code) => {
                 const entry = ratesPayload.rates[code];
                 const isFeatured = code === "USD";
@@ -204,53 +204,63 @@ export function AuthForm({ mode, nextPath, initialError }: AuthFormProps) {
                 return (
                   <div
                     key={code}
-                    className={`flex items-center justify-between gap-2 rounded-xl border border-white/12 px-3 py-2 transition hover:bg-white/12 ${
+                    className={`rounded-xl border border-white/12 transition hover:bg-white/14 ${
                       isFeatured
-                        ? "col-span-2 bg-white/12 py-2.5"
-                        : "bg-white/7"
+                        ? "col-span-3 flex items-center justify-between bg-white/12 px-3 py-2"
+                        : "flex flex-col justify-between bg-white/7 px-2.5 py-2"
                     }`}
                   >
-                    <div className="min-w-0">
-                      <div className="flex items-center gap-1.5">
+                    <div className={isFeatured ? "flex items-center gap-3" : "flex items-center justify-between gap-1"}>
+                      <div className="flex items-center gap-1">
                         <span className="text-xs font-bold text-white">{code}</span>
-                        <span className="text-[11px] text-purple-200/70">
+                        <span className="text-[10px] text-purple-200/70">
                           ({CURRENCIES[code].symbol})
                         </span>
                         {isFeatured && (
-                          <span className="hidden sm:inline text-[11px] text-purple-200/65">
+                          <span className="hidden sm:inline text-[11px] text-purple-200/70">
                             · {CURRENCIES[code].name}
                           </span>
                         )}
                       </div>
-                      <p
-                        className={`mt-0.5 font-bold tabular-nums text-white ${
-                          isFeatured ? "text-sm" : "text-xs"
-                        }`}
-                      >
-                        Rp {Math.round(entry.idrPerUnit).toLocaleString("id-ID")}
-                      </p>
+
+                      {!isFeatured && (
+                        entry.trend === "up" ? (
+                          <span className="inline-flex items-center gap-0.5 text-[10px] font-bold text-emerald-300">
+                            <TrendingUp size={10} strokeWidth={2.5} />+{Math.abs(entry.changePercent)}%
+                          </span>
+                        ) : entry.trend === "down" ? (
+                          <span className="inline-flex items-center gap-0.5 text-[10px] font-bold text-rose-300">
+                            <TrendingDown size={10} strokeWidth={2.5} />-{Math.abs(entry.changePercent)}%
+                          </span>
+                        ) : (
+                          <span className="text-[10px] text-purple-200/70">0%</span>
+                        )
+                      )}
                     </div>
 
-                    {entry.trend === "up" ? (
-                      <span
-                        title={`${code} menguat terhadap IDR`}
-                        className="inline-flex shrink-0 items-center gap-0.5 rounded-full bg-emerald-400/20 px-2 py-0.5 text-[11px] font-bold text-emerald-300 border border-emerald-400/25"
-                      >
-                        <TrendingUp size={11} strokeWidth={2.5} />
-                        +{Math.abs(entry.changePercent)}%
-                      </span>
-                    ) : entry.trend === "down" ? (
-                      <span
-                        title={`IDR menguat terhadap ${code}`}
-                        className="inline-flex shrink-0 items-center gap-0.5 rounded-full bg-rose-400/20 px-2 py-0.5 text-[11px] font-bold text-rose-200 border border-rose-400/25"
-                      >
-                        <TrendingDown size={11} strokeWidth={2.5} />
-                        -{Math.abs(entry.changePercent)}%
-                      </span>
+                    {isFeatured ? (
+                      <div className="flex items-center gap-2.5">
+                        <span className="text-sm font-bold tabular-nums text-white">
+                          Rp {Math.round(entry.idrPerUnit).toLocaleString("id-ID")}
+                        </span>
+                        {entry.trend === "up" ? (
+                          <span className="inline-flex items-center gap-0.5 rounded-full bg-emerald-400/20 px-2 py-0.5 text-[10px] font-bold text-emerald-300 border border-emerald-400/25">
+                            <TrendingUp size={10} strokeWidth={2.5} />+{Math.abs(entry.changePercent)}%
+                          </span>
+                        ) : entry.trend === "down" ? (
+                          <span className="inline-flex items-center gap-0.5 rounded-full bg-rose-400/20 px-2 py-0.5 text-[10px] font-bold text-rose-200 border border-rose-400/25">
+                            <TrendingDown size={10} strokeWidth={2.5} />-{Math.abs(entry.changePercent)}%
+                          </span>
+                        ) : (
+                          <span className="inline-flex items-center gap-0.5 rounded-full bg-white/10 px-2 py-0.5 text-[10px] text-purple-200/80">
+                            <Minus size={10} /> 0%
+                          </span>
+                        )}
+                      </div>
                     ) : (
-                      <span className="inline-flex shrink-0 items-center gap-0.5 rounded-full bg-white/10 px-2 py-0.5 text-[11px] font-medium text-purple-200/80">
-                        <Minus size={10} /> 0%
-                      </span>
+                      <p className="mt-1 text-xs font-bold tabular-nums text-white">
+                        Rp {Math.round(entry.idrPerUnit).toLocaleString("id-ID")}
+                      </p>
                     )}
                   </div>
                 );
@@ -260,7 +270,7 @@ export function AuthForm({ mode, nextPath, initialError }: AuthFormProps) {
         </div>
 
         {/* Bottom Feature Points */}
-        <div className="relative z-10 hidden border-t border-white/15 pt-4 lg:flex items-center justify-between text-xs text-purple-100/85">
+        <div className="relative z-10 hidden border-t border-white/15 pt-3.5 lg:flex items-center justify-between text-xs text-purple-100/85">
           <span className="flex items-center gap-1.5">
             <CheckCircle2 size={14} className="text-emerald-400" />
             Pencatatan instan & rapi

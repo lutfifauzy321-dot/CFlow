@@ -136,20 +136,26 @@ export function MonthlyReport({
   }
 
   return (
-    <div className="space-y-5">
+    <div className="space-y-6">
       <div className="flex flex-wrap items-end justify-between gap-3">
         <div>
-          <p className="text-sm font-medium text-primary">Laporan bulanan</p>
-          <h1 className="mt-1 text-2xl font-semibold capitalize text-foreground">{monthLabel}</h1>
-          <p className="mt-1 text-sm text-muted">Ringkasan dan rincian transaksi pada bulan terpilih.</p>
+          <span className="text-xs font-semibold uppercase tracking-wider text-primary">
+            Laporan Keuangan Bulanan
+          </span>
+          <h1 className="mt-1 text-2xl sm:text-3xl font-bold tracking-tight capitalize text-foreground">
+            {monthLabel}
+          </h1>
+          <p className="mt-1 text-xs sm:text-sm text-muted">
+            Analisis tren harian, distribusi kategori, dan ekspor data transaksi bulanan.
+          </p>
         </div>
         <button
           type="button"
           onClick={exportCsv}
           disabled={transactions.length === 0}
-          className="flex h-11 items-center gap-2 rounded-lg border border-border bg-surface px-4 text-sm font-semibold text-primary-strong transition hover:bg-primary-soft disabled:cursor-not-allowed disabled:opacity-50"
+          className="flex h-10.5 items-center gap-2 rounded-xl border border-border bg-surface px-4 text-xs sm:text-sm font-semibold text-primary transition hover:bg-primary-soft disabled:cursor-not-allowed disabled:opacity-50 shadow-xs"
         >
-          <Download size={17} /> Ekspor CSV
+          <Download size={16} /> Ekspor CSV
         </button>
       </div>
 

@@ -44,7 +44,7 @@ export default async function TransaksiPage({
   const pageParam = Number(firstValue(params.page) ?? 1);
   let page = Number.isSafeInteger(pageParam) && pageParam > 0 ? pageParam : 1;
 
-  let [categories, result] = await Promise.all([
+  const [categories, initialResult] = await Promise.all([
     getTransactionCategories(user.id),
     getTransactions({
       userId: user.id,
@@ -56,6 +56,7 @@ export default async function TransaksiPage({
       pageSize: PAGE_SIZE,
     }),
   ]);
+  let result = initialResult;
 
   const totalPages = Math.max(1, Math.ceil(result.total / PAGE_SIZE));
 
@@ -76,17 +77,19 @@ export default async function TransaksiPage({
     <div className="mx-auto max-w-360 space-y-6">
       <div className="flex flex-col justify-between gap-3 sm:flex-row sm:items-end">
         <div>
-          <p className="text-sm font-medium text-primary">Pencatatan</p>
-          <h1 className="mt-1 text-2xl font-semibold tracking-tight text-foreground">
+          <span className="text-xs font-semibold uppercase tracking-wider text-primary">
+            Pencatatan Arus Uang
+          </span>
+          <h1 className="mt-1 text-2xl sm:text-3xl font-bold tracking-tight text-foreground">
             Transaksi
           </h1>
-          <p className="mt-1.5 text-sm text-muted">
-            Lihat dan kelola semua arus uangmu.
+          <p className="mt-1 text-xs sm:text-sm text-muted">
+            Lihat, cari, dan kelola seluruh catatan pemasukan serta pengeluaranmu.
           </p>
         </div>
-        <p className="text-sm text-muted">
-          {result.total} transaksi pada bulan ini
-        </p>
+        <span className="inline-flex w-fit items-center rounded-full border border-border bg-surface px-3.5 py-1.5 text-xs font-semibold text-foreground-soft shadow-2xs">
+          {result.total} transaksi bulan ini
+        </span>
       </div>
 
       <TransactionTable

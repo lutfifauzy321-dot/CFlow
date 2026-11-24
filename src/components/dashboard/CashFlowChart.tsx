@@ -103,7 +103,7 @@ export function CashFlowChart({
       {/* Header matching screenshot */}
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex items-start gap-3">
-          <span className="grid size-10 shrink-0 place-items-center rounded-2xl bg-purple-100 text-[#5b3fc8] shadow-xs">
+          <span className="grid size-10 shrink-0 place-items-center rounded-2xl bg-purple-100 text-[#5b3fc8] dark:bg-purple-950/60 dark:text-purple-300 border border-purple-200/60 dark:border-purple-800/40 shadow-xs">
             <BarChart2 size={20} strokeWidth={2.2} />
           </span>
           <div>

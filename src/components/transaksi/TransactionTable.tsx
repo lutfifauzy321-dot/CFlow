@@ -118,7 +118,7 @@ export function TransactionTable({
 
   return (
     <section className="space-y-4" aria-label="Daftar transaksi">
-      <div className="flex flex-col gap-3 xl:flex-row xl:items-center xl:justify-between">
+      <div className="flex flex-col gap-3 rounded-3xl border border-border/80 bg-surface p-3.5 sm:p-4 shadow-xs xl:flex-row xl:items-center xl:justify-between">
         <form
           action="/transaksi"
           method="get"

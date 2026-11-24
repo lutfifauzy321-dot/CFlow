@@ -312,7 +312,7 @@ export function SettingsManager({
                         <span>Hapus</span>
                       </button>
                     )}
-                    <span className="inline-flex items-center gap-1 rounded-full bg-emerald-50 text-emerald-700 px-2 py-0.5 text-[10px] font-semibold">
+                    <span className="inline-flex items-center gap-1 rounded-full bg-emerald-50 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300 px-2 py-0.5 text-[10px] font-semibold">
                       <Check size={11} /> Terverifikasi
                     </span>
                   </div>
@@ -323,7 +323,7 @@ export function SettingsManager({
                 <div
                   className={`flex items-center gap-2 rounded-xl p-3 text-xs ${
                     profileMsg.type === "success"
-                      ? "bg-emerald-50 text-emerald-800 border border-emerald-200"
+                      ? "bg-emerald-50 text-emerald-800 border border-emerald-200 dark:bg-emerald-950/60 dark:text-emerald-300 dark:border-emerald-800/50"
                       : "bg-danger-soft text-danger border border-danger/20"
                   }`}
                 >
@@ -391,7 +391,7 @@ export function SettingsManager({
                 <div
                   className={`flex items-center gap-2 rounded-xl p-3 text-xs ${
                     passwordMsg.type === "success"
-                      ? "bg-emerald-50 text-emerald-800 border border-emerald-200"
+                      ? "bg-emerald-50 text-emerald-800 border border-emerald-200 dark:bg-emerald-950/60 dark:text-emerald-300 dark:border-emerald-800/50"
                       : "bg-danger-soft text-danger border border-danger/20"
                   }`}
                 >
@@ -479,7 +479,7 @@ export function SettingsManager({
                 <div
                   className={`flex max-w-lg items-center gap-2 rounded-xl p-3 text-xs ${
                     currencyMsg.type === "success"
-                      ? "bg-emerald-50 text-emerald-800 border border-emerald-200"
+                      ? "bg-emerald-50 text-emerald-800 border border-emerald-200 dark:bg-emerald-950/60 dark:text-emerald-300 dark:border-emerald-800/50"
                       : "bg-danger-soft text-danger border border-danger/20"
                   }`}
                 >
